@@ -1,8 +1,33 @@
 // Global container object to hold library.
-var formation = {};
+function formation(form) {
+	
+	// Make sure Form Parameter is valid.
+	if(!form)
+		throw Error('Unable to create formation object. The Form parameter does not exist.');
+	
+	else if(!form.nodeType)
+		throw Error('Unable to create formation object. The Form parameter is not a node.');
+	
+	// Set Form.
+	this.form = form;
+	
+	// Set Custom Information Zone.
+	this.meta = {};
+}
 
 // Protect global space while inserting function into formation object.
 (function(){
+	
+	/**
+	 * Key: Library ID.
+	 * Access: Public.
+	 * Description: The Javascript Library ID for validation and checking.
+	*/ 
+	formation.prototype.libID = 'formation'; // This should never change.
+	
+	
+	
+	
 	
 	/**
 	 * Function: Validate
@@ -12,7 +37,7 @@ var formation = {};
 	 * @param valid array[] - An array acceptable input values.
 	 * @param callback function - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
 	 */
-	formation.validate = function(value, valid, callback) {
+	formation.prototype.validate = function(value, valid, callback) {
 		
 		// Validate input and valid variables exist.
 		if (!value)
@@ -42,7 +67,7 @@ var formation = {};
 	 * @param valid array[] - An array acceptable input values.
 	 * @param callback function - A function call to receive true or false boolean. True if value is invalid. True if value is valid.
 	 */
-	formation.invalidate = function(value, invalid, callback) {
+	formation.prototype.invalidate = function(value, invalid, callback) {
 		
 		// Validate input and valid variables exist.
 		if (!value)
@@ -72,7 +97,7 @@ var formation = {};
 	 * @param pageClass string - A class to represent a form page.
 	 * @param pageActive string - A class to represent the active page of multiple pages.
 	 */
-	formation.nextPage = function(formId, pageClass, pageActive) {
+	formation.prototype.nextPage = function(formId, pageClass, pageActive) {
 		
 		// Throw error if formId, pageClass, and pageActive does not exist.
 		if (!formId && typeof formId !== 'string')
@@ -111,7 +136,7 @@ var formation = {};
 	 * @param pageClass string - A class to represent a form page.
 	 * @param pageActive string - A class to represent the active page of multiple pages.
 	 */
-	formation.prevPage = function(formId, pageClass, pageActive) {
+	formation.prototype.prevPage = function(formId, pageClass, pageActive) {
 		
 		// Throw error if formId, pageClass, and pageActive does not exist.
 		if (!formId && typeof formId !== 'string')
@@ -142,4 +167,4 @@ var formation = {};
 		}		
 	}
 	
-})();
+}());

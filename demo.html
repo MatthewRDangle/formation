@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<!-- Accessibility & Readability -->
+	<meta charset="ISO-8859-1">
+	<title> Demo | Formation </title>
+	<script src="formation.js"></script>
+
+</head>
+<body>
+	<h1> Formation. </h1>
+	<hr>
+	<form id="form" class="form">
+		<div class="page">
+			<div class="question">
+				<label> Input 1 </label>
+				<input class="input" type="text"></input>
+			</div>
+		</div>
+		<div class="page">
+			<div class="question">
+				<label> Input 2 </label>
+				<input class="input" type="text"></input>
+			</div>		
+		</div>
+		<div class="page">
+			<div class="question">
+				<label> Input 3 </label>
+				<input class="input" type="text"></input>
+			</div>	
+		</div>
+		<div class="page">
+			<div class="question">
+				<label> Input 4 </label>
+				<input class="input" type="text"></input>
+			</div>	
+		</div>
+	</form>
+	
+	<script>
+		/* Create Formation Element. */
+		var form = document.getElementsByTagName('form')[0];
+		form = new formation(form);
+		debugger;
+	</script>
+	
+</body>	
+</html>
