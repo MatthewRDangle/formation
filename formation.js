@@ -77,22 +77,23 @@ function formation(form) {
 
 			// Grap single input.
 			var input = data[i];
+			var sorted = false;
 			
 			// Gather acceptable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-accept')) {
+			if (input.hasAttribute('data-validate-accept') && !sorted) {
 				var accept_array = input.getAttribute('data-validate-accept').split(',');
 
 				// Compare acceptable values.
 				for (var a in accept_array) {
 					if (input.value == accept_array[a]) {
 						approved_inputs.push(input);
-						continue;
+						sorted = true;
 					}
 				}
 			};
 			
 			// Gather acceptable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-accept-range')) {
+			if (input.hasAttribute('data-validate-accept-range') && !sorted) {
 				var accept_array = input.getAttribute('data-validate-accept-range').split(',');
 
 				// Compare range values.
@@ -104,27 +105,31 @@ function formation(form) {
 					var num = undefined;
 					
 					// Check if plus exists.
-					if (plus_idx) {
+					if (plus_idx >= 0) {
 						if (plus_idx == accepted_range_string.length - 1) {
 							num = accepted_range_string.substring(0, plus_idx == accepted_range_string_length - 1);
-							if (num < input.value)
+							if (num < input.value) {
 								approved_inputs.push(input);
+								sorted = true;
+							}
 						}
 					}
-					
+
 					// Check if minus exists.
-					if (min_idx) {
+					if (min_idx >= 0) {
 						if (minus_idx == 0) {
 							num = accepted_range_string.substring(1, accepted_range_string_length);
-							if (num > input.value)
+							if (num > input.value) {
 								approved_inputs.push(input);
+								sorted = true;
+							}
 						}
 					}
 				}
 			};
 			
 			// Gather rejectable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-reject')) {
+			if (input.hasAttribute('data-validate-reject') && !sorted) {
 				
 				// Gather rejectable inputs & compare values with input.
 				var reject_array = input.getAttribute('data-validate-reject').split(',');
@@ -133,13 +138,13 @@ function formation(form) {
 				for (var r in reject_array) {
 					if (input.value == reject_array[r]) {
 						rejected_inputs.push(input);
-						continue;
+						sorted = true;
 					}
 				}
 			};
 			
 			// Gather rejectable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-reject-range')) {
+			if (input.hasAttribute('data-validate-reject-range') && !sorted) {
 				var reject_array = input.getAttribute('data-validate-reject-range').split(',');
 
 				// Compare range values.
@@ -151,27 +156,32 @@ function formation(form) {
 					var num = undefined;
 					
 					// Check if plus exists.
-					if (plus_idx) {
+					if (plus_idx >= 0) {
 						if (plus_idx == rejected_range_string.length - 1) {
 							num = rejected_range_string.substring(0, plus_idx == rejected_range_string_length - 1);
-							if (num < input.value)
+							if (num < input.value) {
 								rejected_inputs.push(input);
+								sorted = true;
+							}
 						}
 					}
 					
 					// Check if minus exists.
-					if (min_idx) {
+					if (min_idx >= 0) {
 						if (minus_idx == 0) {
 							num = rejected_range_string.substring(1, rejected_range_string_length);
-							if (num > input.value)
+							if (num > input.value) {
 								rejected_inputs.push(input);
+								sorted = true;
+							}
 						}
 					}
 				}
 			};
 			
 			// Always reject input if it's isn't sorted.
-			rejected_inputs.push(input);
+			if (!sorted)
+				rejected_inputs.push(input);
 		}
 		
 		// Execute callback, and return any value that is returned via callback function.
@@ -186,84 +196,6 @@ function formation(form) {
 		else
 			return [approved_inputs, rejected_inputs];
 
-	}
-	
-	/**
-	 * Function: Next Page
-	 * Description: If the form is a single page form which simulates multiple pages... this progresses to the next page.
-	 * 
-	 * @param FormId string - The form HTML element ID.
-	 * @param pageClass string - A class to represent a form page.
-	 * @param pageActive string - A class to represent the active page of multiple pages.
-	 */
-	formation.prototype.nextPage = function(formId, pageClass, pageActive) {
-		
-		// Throw error if formId, pageClass, and pageActive does not exist.
-		if (!formId && typeof formId !== 'string')
-			throw Error('A formId is required in order for pager to work.');
-		else if (!pageClass && typeof pageClass !== 'string')
-			throw Error('A class to reperesent a page is required in order for pager to work.');
-		else if (!pageActive && typeof pageActive !== 'string')
-			throw Error('A class to represent an active page is required in order for pager to work.');
-		
-		// Get Form Element.
-		var form = document.getElementById(formId);
-		
-		// Find active page.
-		var pages = form.getElementsByClassName(pageClass);
-		var activeIDX = null;
-		for (var i in pages) {
-			var page = pages[i];
-			if (page.classlist.contains(pageActive))
-				activeIDX = i;
-		}
-		
-		// Hide current page and activate next page.
-		if (activeIDX == null)
-			throw Error('please add an initial active page class to one of your page classes.');
-		else if (activeIDX >= 0) {
-			pages[activeIDX].classlist.remove(pageActive);
-			pages[(activeIDX + 1)].add(pageActive);
-		}
-	}
-	
-	/**
-	 * Function: Previous Page
-	 * Description: If the form is a single page form which simulates multiple pages... this back tracks to the previous page.
-	 * 
-	 * @param FormId string - The form HTML element ID.
-	 * @param pageClass string - A class to represent a form page.
-	 * @param pageActive string - A class to represent the active page of multiple pages.
-	 */
-	formation.prototype.prevPage = function(formId, pageClass, pageActive) {
-		
-		// Throw error if formId, pageClass, and pageActive does not exist.
-		if (!formId && typeof formId !== 'string')
-			throw Error('A formId is required in order for pager to work.');
-		else if (!pageClass && typeof pageClass !== 'string')
-			throw Error('A class to reperesent a page is required in order for pager to work.');
-		else if (!pageActive && typeof pageActive !== 'string')
-			throw Error('A class to represent an active page is required in order for pager to work.');
-		
-		// Get Form Element.
-		var form = document.getElementById(formId);
-		
-		// Find active page.
-		var pages = form.getElementsByClassName(pageClass);
-		var activeIDX = null;
-		for (var i in pages) {
-			var page = pages[i];
-			if (page.classlist.contains(pageActive))
-				activeIDX = i;
-		}
-		
-		// Hide current page and activate previous page.
-		if (activeIDX == null)
-			throw Error('please add an initial active page class to one of your page classes.');
-		else if (activeIDX >= 0) {
-			pages[activeIDX].classlist.remove(pageActive);
-			pages[(activeIDX - 1)].add(pageActive);
-		}		
 	}
 	
 }());
