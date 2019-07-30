@@ -1,15 +1,27 @@
-// Global container object to hold library.
+/**
+ * Contructor: Formation.
+ * Access: Public.
+ * Description: Create the formation object to control a form.
+ * 
+ * @param form [element] [optional] - The form element to be converted into a formation object.
+ * @returns formation [object] - The formation object returned as a object variable.
+ */
 function formation(form) {
 	
-	// Make sure Form Parameter is valid.
-	if(!form)
-		throw Error('Unable to create formation object. The Form parameter does not exist.');
+	// Create a formation object attached to a new document element if form parameter does not exist.
+	if(!form) {
+		this.form = document.createElement('form');
+	}
 	
-	else if(!form.nodeType)
-		throw Error('Unable to create formation object. The Form parameter is not a node.');
+	// Attach the form parameter to the form formation property if it's a document element.
+	else if(form.nodeType) {
+		this.form = form;
+	}
 	
-	// Set Form.
-	this.form = form;
+	// If form parameter exists but does not a document element, notify the user formation can't continue.
+	else {
+		throw Error('Unable to create a formation object. The form parameter specified is not of type node.')
+	}
 	
 	// Set Custom Information Zone.
 	this.meta = {};
@@ -30,63 +42,150 @@ function formation(form) {
 	
 	
 	/**
-	 * Function: Validate
+	 * Function: Validate.
+	 * Access: Public.
 	 * Description: Check the input value with valid combinations.
 	 * 
 	 * @param input node - The HTML element to validate.
 	 * @param valid array[] - An array acceptable input values.
 	 * @param callback function - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
 	 */
-	formation.prototype.validate = function(value, valid, callback) {
+	formation.prototype.validate = function(selector, callback) {
+		// Selector must exist to use validate function.
+		var data = [];
+		if (!selector)
+			throw Error('A select parameter of type string must exist to use the validate function.');
 		
-		// Validate input and valid variables exist.
-		if (!value)
-			throw Error('A value is required.');
-		if (!valid && typeof valid !== 'array')
-			throw Error('An array of valid entries are required in order to validate.');
-		
-		// Compare value to valid answers.
-		var isValid = false;
-		for (var i in valid) {
-			if (value == valid[i])
-				isValid = true;
+		// Check if selector is a ID.
+		else if (selector.substring(0, 1) === "#") {
+			data.push(document.getElementById(selector.replace("#", "")));
 		}
 		
-		// Call callback function. True if value is valid. False if value is invalid.
-		if (isValid)
-			callback(true);
+		// Check if selector is a Class.
+		else if (selector.substring(0, 1) === ".") {
+			data = this.form.getElementsByClassName(selector.replace(".", ""));
+		}
+		
+		// If selector is invalid. Notify the user.
 		else
-			callback(false);
-	}
+			throw Error('The selector must be of type string and start with either a "#" for id, or "." for classname.');
 
-	/**
-	 * Function: Invalidate
-	 * Description: Check the input value with invalid combinations.
-	 * 
-	 * @param input node - The HTML element to validate.
-	 * @param valid array[] - An array acceptable input values.
-	 * @param callback function - A function call to receive true or false boolean. True if value is invalid. True if value is valid.
-	 */
-	formation.prototype.invalidate = function(value, invalid, callback) {
-		
-		// Validate input and valid variables exist.
-		if (!value)
-			throw Error('A value is required.');
-		if (!invalid && typeof invalid !== 'array')
-			throw Error('An array of invalid entries are required in order to invalidate.');
-		
-		// Compare value to valid answers.
-		var isInvalid = false;
-		for (var i in invalid) {
-			if (value == invalid[i])
-				isInvalid = true;
+		// Validate each data.
+		var approved_inputs = [];
+		var rejected_inputs = [];
+		for (var i = 0; i < data.length; i++) {
+
+			// Grap single input.
+			var input = data[i];
+			
+			// Gather acceptable inputs & compare values with input.
+			if (input.hasAttribute('data-validate-accept')) {
+				var accept_array = input.getAttribute('data-validate-accept').split(',');
+
+				// Compare acceptable values.
+				for (var a in accept_array) {
+					if (input.value == accept_array[a]) {
+						approved_inputs.push(input);
+						continue;
+					}
+				}
+			};
+			
+			// Gather acceptable inputs & compare values with input.
+			if (input.hasAttribute('data-validate-accept-range')) {
+				var accept_array = input.getAttribute('data-validate-accept-range').split(',');
+
+				// Compare range values.
+				for (var ar = 0; ar < accept_array.length; ar++) {
+					var accepted_range_string = accept_array[ar];
+					var accepted_range_string_length = accepted_range_string.length;
+					var plus_idx = accepted_range_string.indexOf('+');
+					var min_idx = accepted_range_string.indexOf('-');
+					var num = undefined;
+					
+					// Check if plus exists.
+					if (plus_idx) {
+						if (plus_idx == accepted_range_string.length - 1) {
+							num = accepted_range_string.substring(0, plus_idx == accepted_range_string_length - 1);
+							if (num < input.value)
+								approved_inputs.push(input);
+						}
+					}
+					
+					// Check if minus exists.
+					if (min_idx) {
+						if (minus_idx == 0) {
+							num = accepted_range_string.substring(1, accepted_range_string_length);
+							if (num > input.value)
+								approved_inputs.push(input);
+						}
+					}
+				}
+			};
+			
+			// Gather rejectable inputs & compare values with input.
+			if (input.hasAttribute('data-validate-reject')) {
+				
+				// Gather rejectable inputs & compare values with input.
+				var reject_array = input.getAttribute('data-validate-reject').split(',');
+				
+				// Compare rejectable values.
+				for (var r in reject_array) {
+					if (input.value == reject_array[r]) {
+						rejected_inputs.push(input);
+						continue;
+					}
+				}
+			};
+			
+			// Gather rejectable inputs & compare values with input.
+			if (input.hasAttribute('data-validate-reject-range')) {
+				var reject_array = input.getAttribute('data-validate-reject-range').split(',');
+
+				// Compare range values.
+				for (var rr = 0; rr < accept_array.length; rr++) {
+					var rejected_range_string = reject_array[rr];
+					var rejected_range_string_length = rejected_range_string.length;
+					var plus_idx = rejected_range_string.indexOf('+');
+					var min_idx = rejected_range_string.indexOf('-');
+					var num = undefined;
+					
+					// Check if plus exists.
+					if (plus_idx) {
+						if (plus_idx == rejected_range_string.length - 1) {
+							num = rejected_range_string.substring(0, plus_idx == rejected_range_string_length - 1);
+							if (num < input.value)
+								rejected_inputs.push(input);
+						}
+					}
+					
+					// Check if minus exists.
+					if (min_idx) {
+						if (minus_idx == 0) {
+							num = rejected_range_string.substring(1, rejected_range_string_length);
+							if (num > input.value)
+								rejected_inputs.push(input);
+						}
+					}
+				}
+			};
+			
+			// Always reject input if it's isn't sorted.
+			rejected_inputs.push(input);
 		}
 		
-		// Call callback function. True if value is invalid. True if value is valid.
-		if (isInvalid)
-			callback(false);
+		// Execute callback, and return any value that is returned via callback function.
+		if (callback) {
+			var returnValue = callback(approved_inputs, rejected_inputs);
+			if (typeof returnValue === 'undefined') {
+				return returnValue;
+			}
+		}
+		
+		// Return 2D array to the user if no callback.
 		else
-			callback(true);
+			return [approved_inputs, rejected_inputs];
+
 	}
 	
 	/**

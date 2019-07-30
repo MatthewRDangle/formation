@@ -15,7 +15,7 @@
 		<div class="page">
 			<div class="question">
 				<label> Input 1 </label>
-				<input class="input" type="text"></input>
+				<input data-validate-accept="black, white, yellow" class="input" type="text"></input>
 			</div>
 		</div>
 		<div class="page">
@@ -36,13 +36,18 @@
 				<input class="input" type="text"></input>
 			</div>	
 		</div>
+		
+		<button type="submit"> Submit </button>
 	</form>
 	
 	<script>
 		/* Create Formation Element. */
 		var form = document.getElementsByTagName('form')[0];
-		form = new formation(form);
-		debugger;
+		var form_control = new formation(form);
+		form_control.form.onsubmit = function() {
+			var test = form_control.validate('.input');
+			debugger
+		}
 	</script>
 	
 </body>	
