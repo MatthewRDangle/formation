@@ -31,21 +31,103 @@ function formation(form) {
 (function(){
 	
 	/**
-	 * Name: Library ID.
-	 * Type: Key.
-	 * Access: Public.
+	 * Name: Check Value.
+	 * Type: Function.
+	 * Access: Private.
 	 * For: Formation.
-	 * Description: The Javascript Library ID for validation and checking.
-	*/ 
-	formation.prototype.libID = 'formation'; // This should never change.
-	
-	
-	
-	
+	 * Description: Matches an input value to an array.
+	 */
+	function checkValue(input, arrayValues, methodType) {
+
+		// Check to see if all parameters exist, error if they don't.
+		if (!input || !arrayValues)
+			throw Error('Input or array values were not found.');
+		
+		// If Method Type is not found, assume generic.
+		if (!methodType)
+			methodType = 'generic';
+		else if (typeof methodType !== 'string')
+			throw Error('The method type must be a string.');
+		
+		// Array containers to hold different inputs.
+		var approved_inputs = [];
+		var rejected_inputs = [];
+
+		// Instructions for unspecified data type. Simply matches data to one another for a match. (Note: "3" as a string does equal 3 as a integer. This is intended.)
+		if (methodType == 'generic') {
+			
+			// Compare generic values.
+			for (var g = 0; g < arrayValues.length; g++) {
+				if (input.value == arrayValues[g]) {
+					approved_inputs.push(input);
+					break;
+				}
+				else if (arrayValues.length - 1 == g) {
+					rejected_inputs.push(input);
+				}
+			}
+		}
+		
+		// Instructions for range data type. Google "math range" if you are don't know what a range is.
+		else if (methodType == 'range') {
+			
+			// Compare range values.
+			for (var r = 0; r < arrayValues.length; r++) {
+				var range_string = arrayValues[r];
+				var range_string_length = range_string.length;
+				var plus_idx = range_string.indexOf('+');
+				var min_idx = range_string.indexOf('-');
+				var num = undefined;
+				var err = true;
+				
+				// Check if plus exists.
+				if (plus_idx >= 0) {
+					
+					// Disable Error.
+					err = false;
+					
+					// Validate.
+					if (plus_idx == range_string_length - 1) {
+						num = range_string.substring(0, range_string_length - 1);
+						if (num < input.value)
+							approved_inputs.push(input);
+						else
+							rejected_inputs.push(input);
+					}
+				}
+				
+				// Check if minus exists.
+				if (min_idx >= 0) {
+					
+					// Disable Error.
+					err = false;
+					
+					// Validate.
+					if (minus_idx == 0) {
+						num = range_string.substring(1, range_string_length);
+						if (num > input.value)
+							approved_inputs.push(input);
+						else
+							rejected_inputs.push(input);
+					}
+				}
+				
+				// Error if range was not found.
+				if (err)
+					throw Error('Range validation is not set up correctly for value ' + range_string + 'at array index ' + r);
+			}
+		}
+		
+		else
+			throw Error('Method type did not match avialable method types.')
+		
+		// Return all approved and rejected inputs.
+		return [approved_inputs, rejected_inputs];
+	}
 	
 	/**
-	 * Name: Selector.
-	 * Type: Object.
+	 * Name: Elements By Selector.
+	 * Type: Function.
 	 * Access: Private.
 	 * For: Formation.
 	 * Description: Searches for all elements by a string indicating the selector search for (ex. "#element" or ".elements").
@@ -88,6 +170,15 @@ function formation(form) {
 	}
 	
 	/**
+	 * Name: Library ID.
+	 * Type: Key.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: The Javascript Library ID for validation and checking.
+	*/ 
+	formation.prototype.libID = 'formation'; // This should never change.
+	
+	/**
 	 * Name: Validate.
 	 * Type: Function.
 	 * Access: Public.
@@ -98,127 +189,66 @@ function formation(form) {
 	 * @param callback [Function] [Optional] - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
 	 */
 	formation.prototype.validate = function(selector, callback) {
-	
+
 		// Search and store elements found by selector.
 		var elements = elementsBySelector(selector, this.form);
 
+		// Data storage to return and local for pushing.
+		var return_data = [[],[]];
+		var local_data = undefined;
+		
 		// Validate each element.
-		var approved_inputs = [];
-		var rejected_inputs = [];
 		for (var i = 0; i < elements.length; i++) {
 
-			// Grap single input.
+			// Grap single input & set container for check values.
 			var input = elements[i];
-			var sorted = false;
+			var valuesArray = undefined;
 			
 			// Gather acceptable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-accept') && !sorted) {
-				var accept_array = input.getAttribute('data-validate-accept').split(',');
-
-				// Compare acceptable values.
-				for (var a in accept_array) {
-					if (input.value == accept_array[a]) {
-						approved_inputs.push(input);
-						sorted = true;
-					}
-				}
-			};
+			if (input.hasAttribute('data-validate-accept')) {
+				
+				// Gather acceptable inputs & compare values with input.
+				valuesArray = input.getAttribute('data-validate-accept').split(',');
+				local_data = checkValue(input, valuesArray);
+				return_data[0] = return_data[0].concat(local_data[0]);
+				return_data[1] = return_data[1].concat(local_data[1]);
+				
+			}
 			
 			// Gather acceptable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-accept-range') && !sorted) {
-				var accept_array = input.getAttribute('data-validate-accept-range').split(',');
-
-				// Compare range values.
-				for (var ar = 0; ar < accept_array.length; ar++) {
-					var accepted_range_string = accept_array[ar];
-					var accepted_range_string_length = accepted_range_string.length;
-					var plus_idx = accepted_range_string.indexOf('+');
-					var min_idx = accepted_range_string.indexOf('-');
-					var num = undefined;
-					
-					// Check if plus exists.
-					if (plus_idx >= 0) {
-						if (plus_idx == accepted_range_string.length - 1) {
-							num = accepted_range_string.substring(0, plus_idx == accepted_range_string_length - 1);
-							if (num < input.value) {
-								approved_inputs.push(input);
-								sorted = true;
-							}
-						}
-					}
-
-					// Check if minus exists.
-					if (min_idx >= 0) {
-						if (minus_idx == 0) {
-							num = accepted_range_string.substring(1, accepted_range_string_length);
-							if (num > input.value) {
-								approved_inputs.push(input);
-								sorted = true;
-							}
-						}
-					}
-				}
-			};
+			else if (input.hasAttribute('data-validate-accept-range')) {
+				
+				// Gather acceptable inputs & compare values with input.
+				valuesArray  = input.getAttribute('data-validate-accept-range').split(',');
+				local_data = checkValue(input, valuesArray, 'range');
+				return_data[0] = return_data[0].concat(local_data[0]);
+				return_data[1] = return_data[1].concat(local_data[1]);
+			}
 			
 			// Gather rejectable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-reject') && !sorted) {
+			else if (input.hasAttribute('data-validate-reject')) {
 				
 				// Gather rejectable inputs & compare values with input.
-				var reject_array = input.getAttribute('data-validate-reject').split(',');
-				
-				// Compare rejectable values.
-				for (var r in reject_array) {
-					if (input.value == reject_array[r]) {
-						rejected_inputs.push(input);
-						sorted = true;
-					}
-				}
-			};
+				valuesArray = input.getAttribute('data-validate-reject').split(',');
+				local_data = checkValue(input, valuesArray);
+				return_data[0] = return_data[0].concat(local_data[1]);
+				return_data[1] = return_data[1].concat(local_data[0]);
+			}
 			
 			// Gather rejectable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-reject-range') && !sorted) {
-				var reject_array = input.getAttribute('data-validate-reject-range').split(',');
-
-				// Compare range values.
-				for (var rr = 0; rr < accept_array.length; rr++) {
-					var rejected_range_string = reject_array[rr];
-					var rejected_range_string_length = rejected_range_string.length;
-					var plus_idx = rejected_range_string.indexOf('+');
-					var min_idx = rejected_range_string.indexOf('-');
-					var num = undefined;
-					
-					// Check if plus exists.
-					if (plus_idx >= 0) {
-						if (plus_idx == rejected_range_string.length - 1) {
-							num = rejected_range_string.substring(0, plus_idx == rejected_range_string_length - 1);
-							if (num < input.value) {
-								rejected_inputs.push(input);
-								sorted = true;
-							}
-						}
-					}
-					
-					// Check if minus exists.
-					if (min_idx >= 0) {
-						if (minus_idx == 0) {
-							num = rejected_range_string.substring(1, rejected_range_string_length);
-							if (num > input.value) {
-								rejected_inputs.push(input);
-								sorted = true;
-							}
-						}
-					}
-				}
-			};
-			
-			// Always reject input if it's isn't sorted.
-			if (!sorted)
-				rejected_inputs.push(input);
+			else if (input.hasAttribute('data-validate-reject-range')) {
+				
+				// Gather rejectable inputs & compare values with input.
+				valuesArray = input.getAttribute('data-validate-reject-range').split(',');
+				local_data = checkValue(input, valuesArray, 'range');
+				return_data[0] = return_data[0].concat(local_data[1]);
+				return_data[1] = return_data[1].concat(local_data[0]);
+			}
 		}
 		
 		// Execute callback, and return any value that is returned via callback function.
 		if (callback) {
-			var returnValue = callback(approved_inputs, rejected_inputs);
+			var returnValue = callback(return_data[0], return_data[1]);
 			if (typeof returnValue === 'undefined') {
 				return returnValue;
 			}
@@ -226,7 +256,7 @@ function formation(form) {
 		
 		// Return 2D array to the user if no callback.
 		else
-			return [approved_inputs, rejected_inputs];
+			return return_data;
 	}
 	
 }());
