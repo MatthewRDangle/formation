@@ -31,8 +31,10 @@ function formation(form) {
 (function(){
 	
 	/**
-	 * Key: Library ID.
+	 * Name: Library ID.
+	 * Type: Key.
 	 * Access: Public.
+	 * For: Formation.
 	 * Description: The Javascript Library ID for validation and checking.
 	*/ 
 	formation.prototype.libID = 'formation'; // This should never change.
@@ -42,41 +44,71 @@ function formation(form) {
 	
 	
 	/**
-	 * Function: Validate.
-	 * Access: Public.
-	 * Description: Check the input value with valid combinations.
+	 * Name: Selector.
+	 * Type: Object.
+	 * Access: Private.
+	 * For: Formation.
+	 * Description: Searches for all elements by a string indicating the selector search for (ex. "#element" or ".elements").
 	 * 
-	 * @param input node - The HTML element to validate.
-	 * @param valid array[] - An array acceptable input values.
-	 * @param callback function - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
+	 * @param selector [String] [Required] - The string containing the selector to grab elements ('#' or '.' for example).
+	 * @param root [Object node] [Optional] - The js object node which to conduct the selector search. Default is document.
+	 * @return elements [Object Array[Object Node]] - Returns an array of object nodes found from the search.
 	 */
-	formation.prototype.validate = function(selector, callback) {
-		// Selector must exist to use validate function.
-		var data = [];
+	function elementsBySelector(selector, root) {
+		
+		// Container for returned elements.
+		var elements = [];
+		
+		// Validate and initialize root.
+		if (!root)
+			var root = document;
+		else if (!root.nodeType)
+			throw Error('The Root of the selector search must be an object node.');
+		
+		// Error if selector is not found.
 		if (!selector)
 			throw Error('A select parameter of type string must exist to use the validate function.');
 		
 		// Check if selector is a ID.
 		else if (selector.substring(0, 1) === "#") {
-			data.push(document.getElementById(selector.replace("#", "")));
+			elements.push(document.getElementById(selector.replace("#", "")));
 		}
 		
 		// Check if selector is a Class.
 		else if (selector.substring(0, 1) === ".") {
-			data = this.form.getElementsByClassName(selector.replace(".", ""));
+			elements = root.getElementsByClassName(selector.replace(".", ""));
 		}
 		
 		// If selector is invalid. Notify the user.
 		else
 			throw Error('The selector must be of type string and start with either a "#" for id, or "." for classname.');
+		
+		// Return found elements.
+		return elements;
+	}
+	
+	/**
+	 * Name: Validate.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Check the input value with valid combinations.
+	 * 
+	 * @param selector [String] [Required] - The string containing the selector to grab elements ('#' or '.' for example).
+	 * @param callback [Function] [Optional] - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
+	 */
+	formation.prototype.validate = function(selector, callback) {
+	
+		// Search and store elements found by selector.
+		var elements = elementsBySelector(selector, this.form);
 
-		// Validate each data.
+		// Validate each element.
 		var approved_inputs = [];
 		var rejected_inputs = [];
-		for (var i = 0; i < data.length; i++) {
+		for (var i = 0; i < elements.length; i++) {
 
 			// Grap single input.
-			var input = data[i];
+			var input = elements[i];
 			var sorted = false;
 			
 			// Gather acceptable inputs & compare values with input.
@@ -195,7 +227,6 @@ function formation(form) {
 		// Return 2D array to the user if no callback.
 		else
 			return [approved_inputs, rejected_inputs];
-
 	}
 	
 }());
