@@ -36,6 +36,10 @@ function formation(form) {
 	 * Access: Private.
 	 * For: Formation.
 	 * Description: Matches an input value to an array.
+	 * 
+	 * @param input [Object node] [Required] - The input, textarea, select, or other, to be compared.
+	 * @param arrayValues [Object array[string]] [Required] - An array of values to used for comparison.
+	 * @param methodType [String] [Optional] - Which instructions should be followed.
 	 */
 	function checkValue(input, arrayValues, methodType) {
 
@@ -187,6 +191,8 @@ function formation(form) {
 	 * 
 	 * @param selector [String] [Required] - The string containing the selector to grab elements ('#' or '.' for example).
 	 * @param callback [Function] [Optional] - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
+	 * @return data [Object Array[Object Array], [Object, Array]] - Returns an 2D array. idx 0 being approved values, and 1 being rejected values. If their is a callback function...
+	 		no value will be return, except if the callback returns a value.
 	 */
 	formation.prototype.validate = function(selector, callback) {
 
