@@ -183,6 +183,138 @@ function formation(form) {
 	formation.prototype.libID = 'formation'; // This should never change.
 	
 	/**
+	 * Name: Pager.
+	 */
+	formation.prototype.pager = {
+		next: function(pageSelector, activeSelector) {
+
+			// Search and store elements found by selector.
+			var page_elements = elementsBySelector(pageSelector, this.form);
+			
+			// Convert active selector into readable object.
+			var selector_obj = splitSelector(activeSelector);
+			
+			// Container for all pages.
+			var pages = [];
+			
+			// Container to hold active index to maniplate pages later.
+			var active_idx = undefined;
+			
+			// Find active page in list.
+			for (var p = 0; p < page_elements.length; p++) {
+
+				// Get page and append it to pages.
+				var page = page_elements[p];
+				pages.push(page);
+				
+				// Find active page.
+				if (selector_obj.type == 'id') {
+					if (page.id = selector_obj.name)
+						active_idx = p;
+				}
+				else if (selector_obj.type == 'className') {
+					if (page.classList.contains(selector_obj.name))
+						active_idx = p;
+				}
+				else
+					throw Error('Could not find active page.');
+			}
+
+			// Set next page.
+			var next_idx = active_idx + 1;
+			if (next_idx < pages.length) {
+				if (selector_obj.type == 'id') {
+					pages[active_idx].id = '';
+					pages[next_idx].id = selector_obj_name;
+				}
+				else if (selector_obj.type == 'className') {
+					pages[active_idx].classList.remove(selector_obj.name);
+					pages[next_idx].classList.add(selector_obj.name);
+				}	
+			}
+		},
+		
+		prev: function(pageSelector, activeSelector) {
+			// Search and store elements found by selector.
+			var page_elements = elementsBySelector(pageSelector, this.form);
+			
+			// Convert active selector into readable object.
+			var selector_obj = splitSelector(activeSelector);
+			
+			// Container for all pages.
+			var pages = [];
+			
+			// Container to hold active index to maniplate pages later.
+			var active_idx = undefined;
+			
+			// Find active page in list.
+			for (var p = 0; p < page_elements.length; p++) {
+
+				// Get page and append it to pages.
+				var page = page_elements[p];
+				pages.push(page);
+				
+				// Find active page.
+				if (selector_obj.type == 'id') {
+					if (page.id = selector_obj.name)
+						active_idx = p;
+				}
+				else if (selector_obj.type == 'className') {
+					if (page.classList.contains(selector_obj.name))
+						active_idx = p;
+				}
+				else
+					throw Error('Could not find active page.');
+			}
+
+			// Set previous page.
+			var prev_idx = active_idx - 1;
+			if (prev_idx >= 0) {
+				if (selector_obj.type == 'id') {
+					pages[active_idx].id = '';
+					pages[prev_idx].id = selector_obj_name;
+				}
+				else if (selector_obj.type == 'className') {
+					pages[active_idx].classList.remove(selector_obj.name);
+					pages[prev_idx].classList.add(selector_obj.name);
+				}	
+			}
+		}
+	}
+	
+	/**
+	 * Name: Split Selector.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Seperates the select name and type from the string.
+	 * 
+	 * @param selector [String] [Required] - The CSS selector.
+	 * @return [Object] - An object with a type and name.
+	 */
+	function splitSelector(selector) {
+		
+		// Check if selector is present.
+		if (!selector && typeof selector != 'string')
+			throw Error('Selector must exist as type string.');
+		
+		// Get type from selector.
+		var type = selector.substring(0, 1);
+		if (type == '#')
+			type = 'id';
+		else if (type == '.')
+			type = 'className';
+		else
+			type = undefined;
+		
+		// Get name from selector.
+		var name = selector.substring(1);
+		
+		//Return an object with type and name.
+		return {type: type, name: name};
+	}
+	
+	/**
 	 * Name: Validate.
 	 * Type: Function.
 	 * Access: Public.
@@ -255,9 +387,8 @@ function formation(form) {
 		// Execute callback, and return any value that is returned via callback function.
 		if (callback) {
 			var returnValue = callback(return_data[0], return_data[1]);
-			if (typeof returnValue === 'undefined') {
+			if (typeof returnValue !== 'undefined')
 				return returnValue;
-			}
 		}
 		
 		// Return 2D array to the user if no callback.

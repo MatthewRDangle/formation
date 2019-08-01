@@ -7,12 +7,20 @@
 	<title> Demo | Formation </title>
 	<script src="formation.js"></script>
 
+	<style>
+		.page {
+			display: none;
+		}
+		.active {
+			display: block;
+		}
+	</style>
 </head>
 <body>
 	<h1> Formation. </h1>
 	<hr>
 	<form id="form" class="form">
-		<div class="page">
+		<div class="page active">
 			<div class="question">
 				<label> Input 1 </label>
 				<input data-validate-accept="black,jack" class="input" type="text"></input>
@@ -38,18 +46,28 @@
 		</div>
 		
 		<button type="submit"> Submit </button>
+		<br>
+		<button id='prevButton' type='button'> Previous Page </button>
+		<button id='nextButton' type='button'> Next Page </button>
 	</form>
 	
 	<script>
 		/* Create Formation Element. */
 		var form = document.getElementsByTagName('form')[0];
 		var form_control = new formation(form);
-		form_control.form.onsubmit = function() {
+
+		/* Pager Controls */
+		var nextBtn = document.getElementById('nextButton');
+		nextBtn.onclick = function() {form_control.pager.next('.page', '.active')};
+		var prevBtn = document.getElementById('prevButton');
+		prevBtn.onclick = function() {form_control.pager.prev('.page', '.active')};
+		
+		/* form_control.form.onsubmit = function() {
 
 			form_control.validate('.input', function(a, r) {
-				debugger;
+				debugger;			
 			});
-		}
+		} */
 	</script>
 	
 </body>	
