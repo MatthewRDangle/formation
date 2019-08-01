@@ -44,8 +44,9 @@
 				<input data-validate-reject="black,jack" class="input" type="text"></input>
 			</div>	
 		</div>
-		
-		<button type="submit"> Submit </button>
+		<div class="page">
+			<button type="submit"> Submit </button>
+		</div>
 		<br>
 		<button id='prevButton' type='button'> Previous Page </button>
 		<button id='nextButton' type='button'> Next Page </button>
@@ -57,10 +58,11 @@
 		var form_control = new formation(form);
 
 		/* Pager Controls */
-		var nextBtn = document.getElementById('nextButton');
-		nextBtn.onclick = function() {form_control.pager.next('.page', '.active')};
-		var prevBtn = document.getElementById('prevButton');
-		prevBtn.onclick = function() {form_control.pager.prev('.page', '.active')};
+		var meta = form_control.meta;
+		meta.nextBtn = document.getElementById('nextButton');
+		meta.nextBtn.onclick = function() {form_control.nextPage('page', 'active')};
+		meta.prevBtn = document.getElementById('prevButton');
+		meta.prevBtn.onclick = function() {form_control.prevPage('page', 'active')};
 		
 		/* form_control.form.onsubmit = function() {
 

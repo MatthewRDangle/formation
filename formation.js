@@ -185,100 +185,62 @@ function formation(form) {
 	/**
 	 * Name: Pager.
 	 */
-	formation.prototype.pager = {
-		next: function(pageSelector, activeSelector) {
+	formation.prototype.nextPage = function(pageClass, activeClass) {
 
-			// Search and store elements found by selector.
-			var page_elements = elementsBySelector(pageSelector, this.form);
-			
-			// Convert active selector into readable object.
-			var selector_obj = splitSelector(activeSelector);
-			
-			// Container for all pages.
-			var pages = [];
-			
-			// Container to hold active index to maniplate pages later.
-			var active_idx = undefined;
-			
-			// Find active page in list.
-			for (var p = 0; p < page_elements.length; p++) {
-
-				// Get page and append it to pages.
-				var page = page_elements[p];
-				pages.push(page);
-				
-				// Find active page.
-				if (selector_obj.type == 'id') {
-					if (page.id = selector_obj.name)
-						active_idx = p;
-				}
-				else if (selector_obj.type == 'className') {
-					if (page.classList.contains(selector_obj.name))
-						active_idx = p;
-				}
-				else
-					throw Error('Could not find active page.');
-			}
-
-			// Set next page.
-			var next_idx = active_idx + 1;
-			if (next_idx < pages.length) {
-				if (selector_obj.type == 'id') {
-					pages[active_idx].id = '';
-					pages[next_idx].id = selector_obj_name;
-				}
-				else if (selector_obj.type == 'className') {
-					pages[active_idx].classList.remove(selector_obj.name);
-					pages[next_idx].classList.add(selector_obj.name);
-				}	
-			}
-		},
+		// Search and store elements found by selector.
+		var pages = this.form.getElementsByClassName(pageClass);
 		
-		prev: function(pageSelector, activeSelector) {
-			// Search and store elements found by selector.
-			var page_elements = elementsBySelector(pageSelector, this.form);
-			
-			// Convert active selector into readable object.
-			var selector_obj = splitSelector(activeSelector);
-			
-			// Container for all pages.
-			var pages = [];
-			
-			// Container to hold active index to maniplate pages later.
-			var active_idx = undefined;
-			
-			// Find active page in list.
-			for (var p = 0; p < page_elements.length; p++) {
+		// Container to hold active index to maniplate pages later.
+		var active_idx = undefined;
+		
+		// Find active page in list.
+		for (var p = 0; p < pages.length; p++) {
 
-				// Get page and append it to pages.
-				var page = page_elements[p];
-				pages.push(page);
-				
-				// Find active page.
-				if (selector_obj.type == 'id') {
-					if (page.id = selector_obj.name)
-						active_idx = p;
-				}
-				else if (selector_obj.type == 'className') {
-					if (page.classList.contains(selector_obj.name))
-						active_idx = p;
-				}
-				else
-					throw Error('Could not find active page.');
-			}
+			// Get page and append it to pages.
+			var page = pages[p];
 
-			// Set previous page.
-			var prev_idx = active_idx - 1;
-			if (prev_idx >= 0) {
-				if (selector_obj.type == 'id') {
-					pages[active_idx].id = '';
-					pages[prev_idx].id = selector_obj_name;
-				}
-				else if (selector_obj.type == 'className') {
-					pages[active_idx].classList.remove(selector_obj.name);
-					pages[prev_idx].classList.add(selector_obj.name);
-				}	
-			}
+			// Find active page.
+			if (page.classList.contains(activeClass))
+				active_idx = p;
+			else if (active_idx == undefined && pages.length - 1 == p)
+				throw Error('Could not find active page.');
+		}
+
+		// Set next page.
+		var next_idx = active_idx + 1;
+		if (next_idx < pages.length) {
+			pages[active_idx].classList.remove(activeClass);
+			pages[next_idx].classList.add(activeClass);
+		}
+			
+	},
+		
+	formation.prototype.prevPage = function(pageClass, activeClass) {
+			
+		// Search and store elements found by selector.
+		var pages = this.form.getElementsByClassName(pageClass);
+		
+		// Container to hold active index to maniplate pages later.
+		var active_idx = undefined;
+		
+		// Find active page in list.
+		for (var p = 0; p < pages.length; p++) {
+
+			// Get page and append it to pages.
+			var page = pages[p];
+
+			// Find active page.
+			if (page.classList.contains(activeClass))
+				active_idx = p;
+			else if (active_idx == undefined && pages.length - 1 == p)
+				throw Error('Could not find active page.');
+		}
+
+		// Set previous page.
+		var prev_idx = active_idx - 1;
+		if (prev_idx >= 0) {
+			pages[active_idx].classList.remove(activeClass);
+			pages[prev_idx].classList.add(activeClass);
 		}
 	}
 	
@@ -326,10 +288,16 @@ function formation(form) {
 	 * @return data [Object Array[Object Array], [Object, Array]] - Returns an 2D array. idx 0 being approved values, and 1 being rejected values. If their is a callback function...
 	 		no value will be return, except if the callback returns a value.
 	 */
-	formation.prototype.validate = function(selector, callback) {
+	formation.prototype.validate = function(className, root) {
 
-		// Search and store elements found by selector.
-		var elements = elementsBySelector(selector, this.form);
+		// Check if a root element exist. If it doesn't, assume form container.
+		if (!root)
+			root = this.form;
+		else if (!root.nodeType)
+			throw Error('Cannot conduct search. The root to begin validation is not an object node.');
+		
+		// Search and store elements found by classname.
+		var elements = root.getElementsByClassName(className);
 
 		// Data storage to return and local for pushing.
 		var return_data = [[],[]];
@@ -384,16 +352,8 @@ function formation(form) {
 			}
 		}
 		
-		// Execute callback, and return any value that is returned via callback function.
-		if (callback) {
-			var returnValue = callback(return_data[0], return_data[1]);
-			if (typeof returnValue !== 'undefined')
-				return returnValue;
-		}
-		
-		// Return 2D array to the user if no callback.
-		else
-			return return_data;
+		// Return 2D array.
+		return return_data;
 	}
 	
 }());
