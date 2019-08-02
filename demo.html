@@ -11,8 +11,20 @@
 		.page {
 			display: none;
 		}
+		.error {
+			border: 1px solid rgb(200, 7, 7);
+			background-color: rgba(200, 7, 7, 0.1);
+			padding: 10px;
+			margin-top: 10px;
+		}
+		.input {
+			padding: 5px;
+		}
 		.active {
 			display: block;
+		}
+		.inactive {
+			display: none;
 		}
 	</style>
 </head>
@@ -23,29 +35,30 @@
 		<div class="page active">
 			<div class="question">
 				<label> Input 1 </label>
-				<input data-validate-accept="black,jack" class="input" type="text"></input>
+				<input data-fm-val-a="black,jack" class="input" type="text"></input>
+				<div class="error inactive"></div>
 			</div>
 		</div>
 		<div class="page">
 			<div class="question">
 				<label> Input 2 </label>
-				<input data-validate-reject-range="18+" class="input" type="text"></input>
+				<input data-fm-val-a-range="18+" class="input" type="text"></input>
+				<div class="error inactive"></div>
 			</div>		
 		</div>
 		<div class="page">
 			<div class="question">
 				<label> Input 3 </label>
 				<input class="input" type="text"></input>
+				<div class="error inactive"></div>
 			</div>	
 		</div>
 		<div class="page">
 			<div class="question">
 				<label> Input 4 </label>
-				<input data-validate-reject="black,jack" class="input" type="text"></input>
+				<input data-fm-val-r="black,jack" class="input" type="text"></input>
+				<div class="error inactive"></div>
 			</div>	
-		</div>
-		<div class="page">
-			<button type="submit"> Submit </button>
 		</div>
 		<br>
 		<button id='prevButton' type='button'> Previous Page </button>
@@ -59,17 +72,52 @@
 
 		/* Pager Controls */
 		var meta = form_control.meta;
+		meta.pages = document.getElementsByClassName('page');
+		meta.activePage = 0;
 		meta.nextBtn = document.getElementById('nextButton');
-		meta.nextBtn.onclick = function() {form_control.nextPage('page', 'active')};
-		meta.prevBtn = document.getElementById('prevButton');
-		meta.prevBtn.onclick = function() {form_control.prevPage('page', 'active')};
-		
-		/* form_control.form.onsubmit = function() {
+		meta.nextBtn.onclick = function() {
 
-			form_control.validate('.input', function(a, r) {
-				debugger;			
-			});
-		} */
+			// Validate form.
+			var validate = form_control.validate(meta.pages[meta.activePage].getElementsByClassName('input'));
+			var reject = validate[1];
+
+			// If no errors, next page, otherwise display error on page.
+			if (reject.length == 0) {
+				
+				// Remove errors if any.
+				var accept = validate[0];
+				for (var a = 0; a < accept.length; a++) {
+					var error = accept[a].input.parentElement.getElementsByClassName('error')[0];
+					error.innerHTML = 'Data not correct.';
+					if (!error.classList.contains('inactive'))
+						error.classList.add('inactive');
+				}
+				
+				// Submit on final page.
+				var nextPage = form_control.nextPage(meta.pages, 'active');
+				console.log(nextPage);
+				
+				if (meta.activePage == nextPage)
+					form.submit();
+				else
+					meta.activePage = nextPage;
+			}
+			
+			// Don't proceed with errors. Stop next page.
+			else {
+				for (var r = 0; r < reject.length; r++) {
+					var error = reject[r].input.parentElement.getElementsByClassName('error')[0];
+					error.innerHTML = 'Data not correct.';
+					error.classList.remove('inactive');
+				}
+			}
+		};
+		meta.prevBtn = document.getElementById('prevButton');
+		meta.prevBtn.onclick = function() {
+			
+			// Go to previous page.
+			meta.activePage = form_control.prevPage(meta.pages, 'active');
+		};
 	</script>
 	
 </body>	

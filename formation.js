@@ -1,6 +1,8 @@
 /**
- * Contructor: Formation.
+ * Name: Formation.
+ * Type: Constructor.
  * Access: Public.
+ * For: Formation.
  * Description: Create the formation object to control a form.
  * 
  * @param form [element] [optional] - The form element to be converted into a formation object.
@@ -20,7 +22,7 @@ function formation(form) {
 	
 	// If form parameter exists but does not a document element, notify the user formation can't continue.
 	else {
-		throw Error('Unable to create a formation object. The form parameter specified is not of type node.')
+		throw Error('Unable to create a formation object. The form parameter specified is not of type node.');
 	}
 	
 	// Set Custom Information Zone.
@@ -40,6 +42,7 @@ function formation(form) {
 	 * @param input [Object node] [Required] - The input, textarea, select, or other, to be compared.
 	 * @param arrayValues [Object array[string]] [Required] - An array of values to used for comparison.
 	 * @param methodType [String] [Optional] - Which instructions should be followed.
+	 * @return [Object] - The data object containing all of the information about the checked process.
 	 */
 	function checkValue(input, arrayValues, methodType) {
 
@@ -54,20 +57,24 @@ function formation(form) {
 			throw Error('The method type must be a string.');
 		
 		// Array containers to hold different inputs.
-		var approved_inputs = [];
-		var rejected_inputs = [];
+		var matched_inputs = [];
+		var noMatched_inputs = [];
 
 		// Instructions for unspecified data type. Simply matches data to one another for a match. (Note: "3" as a string does equal 3 as a integer. This is intended.)
 		if (methodType == 'generic') {
 			
 			// Compare generic values.
 			for (var g = 0; g < arrayValues.length; g++) {
+				
+				// Detect Match.
 				if (input.value == arrayValues[g]) {
-					approved_inputs.push(input);
+					matched_inputs.push(buildCKObj(input, arrayValues, methodType, arrayValues[g]));
 					break;
 				}
+				
+				// No Match.
 				else if (arrayValues.length - 1 == g) {
-					rejected_inputs.push(input);
+					noMatched_inputs.push(buildCKObj(input, arrayValues, methodType, null));
 				}
 			}
 		}
@@ -93,10 +100,18 @@ function formation(form) {
 					// Validate.
 					if (plus_idx == range_string_length - 1) {
 						num = range_string.substring(0, range_string_length - 1);
-						if (num < input.value)
-							approved_inputs.push(input);
-						else
-							rejected_inputs.push(input);
+						
+						// Detect Match
+						if (num < input.value) {
+							matched_inputs.push(buildCKObj(input, arrayValues, methodType, range_string));
+							break;
+						}
+						
+						// No Match
+						else {
+							noMatched_inputs.push(buildCKObj(input, arrayValues, methodType, null));
+							break;
+						}
 					}
 				}
 				
@@ -109,10 +124,18 @@ function formation(form) {
 					// Validate.
 					if (minus_idx == 0) {
 						num = range_string.substring(1, range_string_length);
-						if (num > input.value)
-							approved_inputs.push(input);
-						else
-							rejected_inputs.push(input);
+						
+						// Detect Match
+						if (num > input.value) {
+							matched_inputs.push(buildCKObj(input, arrayValues, methodType, range_string));
+							break;
+						}
+						
+						// No Match
+						else {
+							noMatched_inputs.push(buildCKObj(input, arrayValues, methodType, null));
+							break;
+						}
 					}
 				}
 				
@@ -126,51 +149,29 @@ function formation(form) {
 			throw Error('Method type did not match avialable method types.')
 		
 		// Return all approved and rejected inputs.
-		return [approved_inputs, rejected_inputs];
-	}
-	
-	/**
-	 * Name: Elements By Selector.
-	 * Type: Function.
-	 * Access: Private.
-	 * For: Formation.
-	 * Description: Searches for all elements by a string indicating the selector search for (ex. "#element" or ".elements").
-	 * 
-	 * @param selector [String] [Required] - The string containing the selector to grab elements ('#' or '.' for example).
-	 * @param root [Object node] [Optional] - The js object node which to conduct the selector search. Default is document.
-	 * @return elements [Object Array[Object Node]] - Returns an array of object nodes found from the search.
-	 */
-	function elementsBySelector(selector, root) {
+		return [matched_inputs, noMatched_inputs];
 		
-		// Container for returned elements.
-		var elements = [];
-		
-		// Validate and initialize root.
-		if (!root)
-			var root = document;
-		else if (!root.nodeType)
-			throw Error('The Root of the selector search must be an object node.');
-		
-		// Error if selector is not found.
-		if (!selector)
-			throw Error('A select parameter of type string must exist to use the validate function.');
-		
-		// Check if selector is a ID.
-		else if (selector.substring(0, 1) === "#") {
-			elements.push(document.getElementById(selector.replace("#", "")));
+		/**
+		 * Name: Build Check Object.
+		 * Type: Function.
+		 * Access: Private.
+		 * For: Check Value.
+		 * Description. Builds the check object containing all data about the check.
+		 * 
+		 * @param input [Object node] [Required] - The input element being checked.
+		 * @param arrayValues [Object array[String] [Required] - A string array of data values the input value was compared to.
+		 * @param methodType [String] [Required] - The type of instructions the data was checked against.
+		 * @param matchedWith [String] [Required] - The data validation parameter the input value passed.
+		 * @return [Object] - The data object containing all of the information about the checked process.
+		 */
+		function buildCKObj(input, arrayValues, methodType, matchedWith) {
+			return {
+				input: input,
+				comparedTo: arrayValues,
+				methodType: methodType,
+				matchedWith: matchedWith
+			}
 		}
-		
-		// Check if selector is a Class.
-		else if (selector.substring(0, 1) === ".") {
-			elements = root.getElementsByClassName(selector.replace(".", ""));
-		}
-		
-		// If selector is invalid. Notify the user.
-		else
-			throw Error('The selector must be of type string and start with either a "#" for id, or "." for classname.');
-		
-		// Return found elements.
-		return elements;
 	}
 	
 	/**
@@ -183,12 +184,25 @@ function formation(form) {
 	formation.prototype.libID = 'formation'; // This should never change.
 	
 	/**
-	 * Name: Pager.
+	 * Name: Next Page.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Loops through an array of elements and toggles the 'active' state of the page element.
+	 * 
+	 * @param pages [Object array[object node]] [Required] - A list of pages to loop through to set the active page.
+	 * @param toggleClass [String] [Required] - The toggle class to add and remove from pages for viewing.
+	 * @return [Integer] - The index of the currently active page within the array.
 	 */
-	formation.prototype.nextPage = function(pageClass, activeClass) {
-
-		// Search and store elements found by selector.
-		var pages = this.form.getElementsByClassName(pageClass);
+	formation.prototype.nextPage = function(pages, toggleClass) {
+			
+		// Check if an array of page elements exist. If it doesn't, error.
+		if (!pages || !pages.length)
+			throw Error("In order to select next page, an array of elements needs to be passed through.");
+		
+		// Check if toggle class exists.
+		if (!toggleClass)
+			throw Error('A toggle class state must exist in order to set the next page.')
 		
 		// Container to hold active index to maniplate pages later.
 		var active_idx = undefined;
@@ -198,9 +212,13 @@ function formation(form) {
 
 			// Get page and append it to pages.
 			var page = pages[p];
+			
+			// Check if page is a js node.
+			if (!page.nodeType)
+				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the page elements array.');
 
 			// Find active page.
-			if (page.classList.contains(activeClass))
+			if (page.classList.contains(toggleClass))
 				active_idx = p;
 			else if (active_idx == undefined && pages.length - 1 == p)
 				throw Error('Could not find active page.');
@@ -209,16 +227,38 @@ function formation(form) {
 		// Set next page.
 		var next_idx = active_idx + 1;
 		if (next_idx < pages.length) {
-			pages[active_idx].classList.remove(activeClass);
-			pages[next_idx].classList.add(activeClass);
-		}
+			pages[active_idx].classList.toggle(toggleClass);
+			pages[next_idx].classList.toggle(toggleClass);
 			
+			// Return the new active index.
+			return next_idx;
+		}
+		else {
+			// Return unchanged active index.
+			return active_idx;
+		}
 	},
 		
-	formation.prototype.prevPage = function(pageClass, activeClass) {
+	/**
+	 * Name: Prev Page.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Loops through an array of elements and toggles the 'active' state of the page element.
+	 * 
+	 * @param pages [Object array[object node]] [Required] - A list of pages to loop through to set the active page.
+	 * @param toggleClass [String] [Required] - The active class to add and remove from pages for viewing.
+	 * @return [Integer] - The index of the currently active page within the array.
+	 */
+	formation.prototype.prevPage = function(pages, toggleClass) {
 			
-		// Search and store elements found by selector.
-		var pages = this.form.getElementsByClassName(pageClass);
+		// Check if an array of page elements exist. If it doesn't, error.
+		if (!pages || !pages.length)
+			throw Error("In order to select previous page, an array of elements needs to be passed through.");
+		
+		// Check if active class exists.
+		if (!toggleClass)
+			throw Error('An active class state must exist in order to set the next page.')
 		
 		// Container to hold active index to maniplate pages later.
 		var active_idx = undefined;
@@ -228,9 +268,13 @@ function formation(form) {
 
 			// Get page and append it to pages.
 			var page = pages[p];
+			
+			// Check if page is a js node.
+			if (!page.nodeType)
+				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the page elements array.');
 
 			// Find active page.
-			if (page.classList.contains(activeClass))
+			if (page.classList.contains(toggleClass))
 				active_idx = p;
 			else if (active_idx == undefined && pages.length - 1 == p)
 				throw Error('Could not find active page.');
@@ -239,41 +283,16 @@ function formation(form) {
 		// Set previous page.
 		var prev_idx = active_idx - 1;
 		if (prev_idx >= 0) {
-			pages[active_idx].classList.remove(activeClass);
-			pages[prev_idx].classList.add(activeClass);
+			pages[active_idx].classList.toggle(toggleClass);
+			pages[prev_idx].classList.toggle(toggleClass);
+			
+			// Return the new active index.
+			return prev_idx;
 		}
-	}
-	
-	/**
-	 * Name: Split Selector.
-	 * Type: Function.
-	 * Access: Public.
-	 * For: Formation.
-	 * Description: Seperates the select name and type from the string.
-	 * 
-	 * @param selector [String] [Required] - The CSS selector.
-	 * @return [Object] - An object with a type and name.
-	 */
-	function splitSelector(selector) {
-		
-		// Check if selector is present.
-		if (!selector && typeof selector != 'string')
-			throw Error('Selector must exist as type string.');
-		
-		// Get type from selector.
-		var type = selector.substring(0, 1);
-		if (type == '#')
-			type = 'id';
-		else if (type == '.')
-			type = 'className';
-		else
-			type = undefined;
-		
-		// Get name from selector.
-		var name = selector.substring(1);
-		
-		//Return an object with type and name.
-		return {type: type, name: name};
+		else {
+			// Return unchanged active index.
+			return active_idx;
+		}
 	}
 	
 	/**
@@ -284,20 +303,18 @@ function formation(form) {
 	 * Description: Check the input value with valid combinations.
 	 * 
 	 * @param selector [String] [Required] - The string containing the selector to grab elements ('#' or '.' for example).
-	 * @param callback [Function] [Optional] - A function call to receive true or false boolean. True if value is valid. False if value is invalid.
-	 * @return data [Object Array[Object Array], [Object, Array]] - Returns an 2D array. idx 0 being approved values, and 1 being rejected values. If their is a callback function...
-	 		no value will be return, except if the callback returns a value.
+	 * @return data [Object Array[Object array[Object node]], [Object, array[Object node]]] - Returns a 2D array. idx 0 being approved, and 1 being rejected.
+			Each inner array is filled with an object containing information about the validation process.
 	 */
-	formation.prototype.validate = function(className, root) {
+	formation.prototype.validate = function(elements) {
 
-		// Check if a root element exist. If it doesn't, assume form container.
-		if (!root)
-			root = this.form;
-		else if (!root.nodeType)
-			throw Error('Cannot conduct search. The root to begin validation is not an object node.');
-		
-		// Search and store elements found by classname.
-		var elements = root.getElementsByClassName(className);
+		// Check if it's a single elements. If so, push into an array for checking.
+		if (!elements.length && elements.nodeType)
+			elements = [elements]
+			
+		// Check if an array of elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to validate an array of elements needs to be passed through.");
 
 		// Data storage to return and local for pushing.
 		var return_data = [[],[]];
@@ -310,42 +327,45 @@ function formation(form) {
 			var input = elements[i];
 			var valuesArray = undefined;
 			
+			// Check if input is a js node.
+			if (!input.nodeType)
+				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the elements array.');
+			
 			// Gather acceptable inputs & compare values with input.
-			if (input.hasAttribute('data-validate-accept')) {
+			if (input.hasAttribute('data-fm-val-a')) {
 				
 				// Gather acceptable inputs & compare values with input.
-				valuesArray = input.getAttribute('data-validate-accept').split(',');
+				valuesArray = input.getAttribute('data-fm-val-a').split(',');
 				local_data = checkValue(input, valuesArray);
 				return_data[0] = return_data[0].concat(local_data[0]);
 				return_data[1] = return_data[1].concat(local_data[1]);
-				
 			}
 			
 			// Gather acceptable inputs & compare values with input.
-			else if (input.hasAttribute('data-validate-accept-range')) {
+			else if (input.hasAttribute('data-fm-val-a-range')) {
 				
 				// Gather acceptable inputs & compare values with input.
-				valuesArray  = input.getAttribute('data-validate-accept-range').split(',');
+				valuesArray  = input.getAttribute('data-fm-val-a-range').split(',');
 				local_data = checkValue(input, valuesArray, 'range');
 				return_data[0] = return_data[0].concat(local_data[0]);
 				return_data[1] = return_data[1].concat(local_data[1]);
 			}
 			
 			// Gather rejectable inputs & compare values with input.
-			else if (input.hasAttribute('data-validate-reject')) {
+			else if (input.hasAttribute('data-fm-val-r')) {
 				
 				// Gather rejectable inputs & compare values with input.
-				valuesArray = input.getAttribute('data-validate-reject').split(',');
+				valuesArray = input.getAttribute('data-fm-val-r').split(',');
 				local_data = checkValue(input, valuesArray);
 				return_data[0] = return_data[0].concat(local_data[1]);
 				return_data[1] = return_data[1].concat(local_data[0]);
 			}
 			
 			// Gather rejectable inputs & compare values with input.
-			else if (input.hasAttribute('data-validate-reject-range')) {
+			else if (input.hasAttribute('data-fm-val-r-range')) {
 				
 				// Gather rejectable inputs & compare values with input.
-				valuesArray = input.getAttribute('data-validate-reject-range').split(',');
+				valuesArray = input.getAttribute('data-fm-val-r-range').split(',');
 				local_data = checkValue(input, valuesArray, 'range');
 				return_data[0] = return_data[0].concat(local_data[1]);
 				return_data[1] = return_data[1].concat(local_data[0]);
