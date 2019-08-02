@@ -74,6 +74,8 @@
 		var meta = form_control.meta;
 		meta.pages = document.getElementsByClassName('page');
 		meta.activePage = 0;
+		
+		// Next Button
 		meta.nextBtn = document.getElementById('nextButton');
 		meta.nextBtn.onclick = function() {
 
@@ -94,13 +96,12 @@
 				}
 				
 				// Submit on final page.
-				var nextPage = form_control.nextPage(meta.pages, 'active');
-				console.log(nextPage);
+				var nextActive = form_control.nextActive(meta.pages, 'active');
 				
-				if (meta.activePage == nextPage)
+				if (meta.activePage == nextActive)
 					form.submit();
 				else
-					meta.activePage = nextPage;
+					meta.activePage = nextActive;
 			}
 			
 			// Don't proceed with errors. Stop next page.
@@ -112,11 +113,13 @@
 				}
 			}
 		};
+		
+		// Prev Button
 		meta.prevBtn = document.getElementById('prevButton');
 		meta.prevBtn.onclick = function() {
 			
 			// Go to previous page.
-			meta.activePage = form_control.prevPage(meta.pages, 'active');
+			meta.activePage = form_control.prevActive(meta.pages, 'active');
 		};
 	</script>
 	

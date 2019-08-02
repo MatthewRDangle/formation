@@ -184,51 +184,81 @@ function formation(form) {
 	formation.prototype.libID = 'formation'; // This should never change.
 	
 	/**
-	 * Name: Next Page.
+	 * Name: Find Active.
 	 * Type: Function.
 	 * Access: Public.
 	 * For: Formation.
-	 * Description: Loops through an array of elements and toggles the 'active' state of the page element.
+	 * Description: Loops through an array of elements and finds the active element.
 	 * 
-	 * @param pages [Object array[object node]] [Required] - A list of pages to loop through to set the active page.
-	 * @param toggleClass [String] [Required] - The toggle class to add and remove from pages for viewing.
-	 * @return [Integer] - The index of the currently active page within the array.
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The toggle class to add and remove from elements for viewing.
+	 * @return [Integer] - The index of the currently active element within the array.
 	 */
-	formation.prototype.nextPage = function(pages, toggleClass) {
-			
-		// Check if an array of page elements exist. If it doesn't, error.
-		if (!pages || !pages.length)
-			throw Error("In order to select next page, an array of elements needs to be passed through.");
+	formation.prototype.findActive = function(elements, toggleClass) {
+		
+		// Check if an array of element elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to select next element, an array of elements needs to be passed through.");
 		
 		// Check if toggle class exists.
 		if (!toggleClass)
-			throw Error('A toggle class state must exist in order to set the next page.')
+			throw Error('A toggle class state must exist in order to set the next element.');
 		
-		// Container to hold active index to maniplate pages later.
+		// Container to hold active index to maniplate elements later.
 		var active_idx = undefined;
 		
-		// Find active page in list.
-		for (var p = 0; p < pages.length; p++) {
+		// Find active element in list.
+		for (var p = 0; p < elements.length; p++) {
 
-			// Get page and append it to pages.
-			var page = pages[p];
+			// Get element and append it to elements.
+			var element = elements[p];
 			
-			// Check if page is a js node.
-			if (!page.nodeType)
-				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the page elements array.');
+			// Check if element is a js node.
+			if (!element.nodeType)
+				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the element elements array.');
 
-			// Find active page.
-			if (page.classList.contains(toggleClass))
+			// Find active element.
+			if (element.classList.contains(toggleClass)) {
 				active_idx = p;
-			else if (active_idx == undefined && pages.length - 1 == p)
-				throw Error('Could not find active page.');
+				break;
+			}
+			else if (active_idx == undefined && elements.length - 1 == p)
+				throw Error('Could not find active element.');
 		}
+		
+		// Return the active index number.
+		return active_idx;
+	}
+	
+	/**
+	 * Name: Next Active.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Loops through an array of elements and toggles the 'active' element.
+	 * 
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The toggle class to add and remove from elements for viewing.
+	 * @return [Integer] - The index of the currently active element within the array.
+	 */
+	formation.prototype.nextActive = function(elements, toggleClass) {
 
-		// Set next page.
+		// Check if an array of element elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to select next element, an array of elements needs to be passed through.");
+		
+		// Check if toggle class exists.
+		if (!toggleClass)
+			throw Error('A toggle class state must exist in order to set the next element.');
+		
+		// Container to hold active index to manipulate elements later.
+		var active_idx = this.findActive(elements, toggleClass);
+
+		// Set next element.
 		var next_idx = active_idx + 1;
-		if (next_idx < pages.length) {
-			pages[active_idx].classList.toggle(toggleClass);
-			pages[next_idx].classList.toggle(toggleClass);
+		if (next_idx < elements.length) {
+			elements[active_idx].classList.toggle(toggleClass);
+			elements[next_idx].classList.toggle(toggleClass);
 			
 			// Return the new active index.
 			return next_idx;
@@ -240,51 +270,34 @@ function formation(form) {
 	},
 		
 	/**
-	 * Name: Prev Page.
+	 * Name: Previous Active.
 	 * Type: Function.
 	 * Access: Public.
 	 * For: Formation.
-	 * Description: Loops through an array of elements and toggles the 'active' state of the page element.
+	 * Description: Loops through an array of elements and toggles the 'active' state of the element element.
 	 * 
-	 * @param pages [Object array[object node]] [Required] - A list of pages to loop through to set the active page.
-	 * @param toggleClass [String] [Required] - The active class to add and remove from pages for viewing.
-	 * @return [Integer] - The index of the currently active page within the array.
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
+	 * @return [Integer] - The index of the currently active element within the array.
 	 */
-	formation.prototype.prevPage = function(pages, toggleClass) {
+	formation.prototype.prevActive = function(elements, toggleClass) {
 			
-		// Check if an array of page elements exist. If it doesn't, error.
-		if (!pages || !pages.length)
-			throw Error("In order to select previous page, an array of elements needs to be passed through.");
+		// Check if an array of element elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to select previous element, an array of elements needs to be passed through.");
 		
 		// Check if active class exists.
 		if (!toggleClass)
-			throw Error('An active class state must exist in order to set the next page.')
+			throw Error('An active class state must exist in order to set the next element.')
 		
-		// Container to hold active index to maniplate pages later.
-		var active_idx = undefined;
-		
-		// Find active page in list.
-		for (var p = 0; p < pages.length; p++) {
+		// Container to hold active index to manipulate elements later.
+		var active_idx = this.findActive(elements, toggleClass);
 
-			// Get page and append it to pages.
-			var page = pages[p];
-			
-			// Check if page is a js node.
-			if (!page.nodeType)
-				throw Error('This is not an element. Index ' + i + 'data is ' + input + ' of the page elements array.');
-
-			// Find active page.
-			if (page.classList.contains(toggleClass))
-				active_idx = p;
-			else if (active_idx == undefined && pages.length - 1 == p)
-				throw Error('Could not find active page.');
-		}
-
-		// Set previous page.
+		// Set previous element.
 		var prev_idx = active_idx - 1;
 		if (prev_idx >= 0) {
-			pages[active_idx].classList.toggle(toggleClass);
-			pages[prev_idx].classList.toggle(toggleClass);
+			elements[active_idx].classList.toggle(toggleClass);
+			elements[prev_idx].classList.toggle(toggleClass);
 			
 			// Return the new active index.
 			return prev_idx;
