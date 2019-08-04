@@ -11,9 +11,3 @@ Currently formation is only offered as a self hosted js file. Download the file 
 <pre>
 <script src="[path to file]/formation.js"></script>
 </pre>
-
-<hr>
-
-Thanks for reading!
-
-🎁
