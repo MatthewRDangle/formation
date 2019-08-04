@@ -1,6 +1,6 @@
 # Formation
-[What is Formation?](#what-is-formation)
-[Installation](#installation)
+* [What is Formation?](#what-is-formation)
+* [Installation](#installation)
 
 ## What is formation?
 A ultra fast and light javascript constructor object for building and validating HTML forms.
