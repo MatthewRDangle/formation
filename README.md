@@ -1,10 +1,14 @@
-# Formation
+# Formation [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 * [What is Formation?](#what-is-formation)
 * [Installation](#installation)
+* [Documentation](#documentation)
+* [Getting Help](#getting-help)
 * [Versioning](#versioning)
 
 ## What is formation?
-A ultra fast and light javascript constructor object for building and validating HTML forms.
+A ultra fast and light javascript constructor object for building and validating HTML forms. It's small, (less than 15kb in file size), and provides important form input validation straight out of the box. See demo.html file for more detail from your download.
+
+Formation was build to support all modern browsers, from IE 11 onward, Chrome, Safari, Firefox and Edge. No polyfills required. :fire:
 
 ## Installation
 Currently formation is only offered as a self hosted js file. Download the file and add it to your project, then reference it with an inline script tag.
@@ -12,6 +16,14 @@ Currently formation is only offered as a self hosted js file. Download the file 
 <pre>
 <script src="[path to file]/formation.js"></script>
 </pre>
+
+## Documentation
+The only documentation available for formation is the inline comments served inside the javascript. Every line and function is well documented for crisp and clear instructions. If you need more assistance, the demo.html provides a better understanding of the use case for each function.
+
+At some point, this information will be available in the repository's wiki. Just not at this time.
+
+## Getting Help
+If you have any issue using formation, or would like to provide feedback, post an issue on github.
 
 ## Versioning
 Formation will be maintained under these versioning guidelines as much as possible. Releases will be numbered with the following format:
