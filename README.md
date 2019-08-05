@@ -8,7 +8,7 @@
 ## What is formation?
 A ultra fast and light javascript constructor object for building and validating HTML forms. It's small, (less than 15kb in file size), and provides important form input validation straight out of the box. See demo.html file for more detail from your download.
 
-Formation was build to support all modern browsers, from IE 11 onward, Chrome, Safari, Firefox and Edge. No polyfills required. :fire:
+Formation was build to support all modern browsers, from IE 11 onward, Chrome, Safari, Firefox and Edge. Designed for vanilla javascript. No polyfills required. :fire:
 
 ## Installation
 Currently formation is only offered as a self hosted js file. Download the file and add it to your project, then reference it with an inline script tag.
