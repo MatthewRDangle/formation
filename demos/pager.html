@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 	<!-- Accessibility & Readability -->
 	<meta charset="ISO-8859-1">
-	<title> Demo | Formation </title>
-	<script src="formation.js"></script>
+	<title> Pager Demo | Formation </title>
+	<script src="../formation.js"></script>
 
 	<style>
 		.page {
@@ -31,32 +30,46 @@
 <body>
 	<h1> Formation. </h1>
 	<hr>
+	<p> A pager system using validation to restrict or set next page. Submits on final. </p>
+	<hr>
 	<form id="form" class="form">
 		<div class="page active">
+			<strong> Page 1 | 4 </strong>
 			<div class="question">
+				<p> To continue, the answer must be either <strong> black or jack </strong>. <strong> Case sensitive. </strong> </p>
 				<label> Input 1 </label>
 				<input data-fm-val-a="black,jack" class="input" type="text"></input>
 				<div class="error inactive"></div>
 			</div>
 		</div>
 		<div class="page">
+		<strong> Page 2 | 4 </strong>
 			<div class="question">
+				<p> To continue, the number must be <strong> above 18 </strong>. </p>
 				<label> Input 2 </label>
 				<input data-fm-val-a-range="18+" class="input" type="text"></input>
 				<div class="error inactive"></div>
 			</div>		
 		</div>
 		<div class="page">
+				<strong> Page 3 | 4 </strong>
 			<div class="question">
+				<p> There is no validation requirements here. Type what ever you want. </p>
 				<label> Input 3 </label>
 				<input class="input" type="text"></input>
 				<div class="error inactive"></div>
 			</div>	
 		</div>
 		<div class="page">
+		<strong> Page 4 | 4 </strong>
 			<div class="question">
+				<p> Look! Multiple inputs on the same page. Neither of these require a value to submit.  </p>
 				<label> Input 4 </label>
-				<input data-fm-val-r="black,jack" class="input" type="text"></input>
+				<input class="input" type="text"></input>
+				<div class="error inactive"></div>
+				
+				<label> Input 5 </label>
+				<input class="input" type="text"></input>
 				<div class="error inactive"></div>
 			</div>	
 		</div>
@@ -85,7 +98,7 @@
 
 			// If no errors, next page, otherwise display error on page.
 			if (reject.length == 0) {
-				
+
 				// Remove errors if any.
 				var accept = validate[0];
 				for (var a = 0; a < accept.length; a++) {
@@ -108,7 +121,7 @@
 			else {
 				for (var r = 0; r < reject.length; r++) {
 					var error = reject[r].input.parentElement.getElementsByClassName('error')[0];
-					error.innerHTML = 'Data not correct.';
+					error.innerHTML = 'The data value is incorrect.';
 					error.classList.remove('inactive');
 				}
 			}
