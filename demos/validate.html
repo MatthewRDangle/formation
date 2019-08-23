@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Accessibility & Readability -->
+	<meta charset="ISO-8859-1">
+	<title> Pager Demo | Formation </title>
+	<script src="../formation.js"></script>
+
+	<style>
+		.page {
+			display: none;
+		}
+		.error {
+			border: 1px solid rgb(200, 7, 7);
+			background-color: rgba(200, 7, 7, 0.1);
+			padding: 10px;
+			margin-top: 10px;
+		}
+		.input {
+			padding: 5px;
+		}
+		.active {
+			display: block;
+		}
+		.inactive {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<h1> Formation. </h1>
+	<hr>
+	<p> A pager system using validation to restrict or set next page. Submits on final. </p>
+	<hr>
+	<form id="form" class="form">
+		<div class="question">
+			<p> To continue, the answer must be either <strong> black or jack </strong>. <strong> Case sensitive. </strong> </p>
+			<label> Input 1 </label>
+			<input data-fm-val-a="black,jack" class="input" type="text"></input>
+			<div class="error inactive"></div>
+		</div>
+		<div class="question">
+			<p> To continue, the answer must be either <strong> white or green </strong>. <strong> Case sensitive. </strong> </p>
+			<label> Input 2 </label>
+			<input data-fm-val-a="white,green" class="input" type="text"></input>
+			<div class="error inactive"></div>
+		</div>
+		<div class="question">
+			<p> To continue, the answer must be either <strong> yellow or blue </strong>. <strong> Case sensitive. </strong> </p>
+			<label> Input 3 </label>
+			<input data-fm-val-a="yellow,blue" class="input" type="text"></input>
+			<div class="error inactive"></div>
+		</div>
+		<button id="submitbtn" type="button"> Submit </button>
+	</form>
+	
+	<script>
+		/* Create Formation Element. */
+		var form = document.getElementsByTagName('form')[0];
+		var form_control = new formation(form);
+		
+		// Submit control.
+		document.getElementById('submitbtn').onclick = function() {
+
+			// Validate form.
+			var validate = form_control.validate(document.getElementsByTagName('input'));
+			var approve = validate[0];
+			var reject = validate[1];
+
+			// If no errors, submit
+			if (reject.length == 0) {
+				form.submit();
+			}
+			
+			// Show error div for rejected values. Hide errors for approved.
+			else {
+				
+				// Hide errors for approved values.
+				for (var a = 0; a < approve.length; a++) {
+					var error = approve[a].input.parentElement.getElementsByClassName('error')[0];
+					error.classList.add('inactive');
+				}
+				
+				// Show errors for rejected values.
+				for (var r = 0; r < reject.length; r++) {
+					var error = reject[r].input.parentElement.getElementsByClassName('error')[0];
+					error.innerHTML = 'The data value is incorrect.';
+					error.classList.remove('inactive');
+				}
+			}
+		};
+	</script>
+	
+</body>	
+</html>
