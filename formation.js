@@ -1,36 +1,46 @@
-/**
- * Name: Formation.
- * Type: Constructor.
- * Access: Public.
- * For: Formation.
- * Description: Create the formation object to control a form.
- * 
- * @param form [element] [optional] - The form element to be converted into a formation object.
- * @returns formation [object] - The formation object returned as a object variable.
- */
-function formation(form) {
-	
-	// Create a formation object attached to a new document element if form parameter does not exist.
-	if(!form) {
-		this.form = document.createElement('form');
-	}
-	
-	// Attach the form parameter to the form formation property if it's a document element.
-	else if(form.nodeType) {
-		this.form = form;
-	}
-	
-	// If form parameter exists but does not a document element, notify the user formation can't continue.
-	else {
-		throw Error('Unable to create a formation object. The form parameter specified is not of type node.');
-	}
-	
-	// Set Custom Information Zone.
-	this.meta = {};
-}
-
+var formation = null;
 // Protect global space while inserting function into formation object.
 (function(){
+	
+	/**
+	 * Name: Formation.
+	 * Type: Constructor.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Create the formation object to control a form.
+	 * 
+	 * @param form [element] [optional] - The form element to be converted into a formation object.
+	 * @returns formation [object] - The formation object returned as a object variable.
+	 */
+	formation = function(form) {
+		
+		// Create a formation object attached to a new document element if form parameter does not exist.
+		if(!form) {
+			this.form = document.createElement('form');
+		}
+		
+		// Attach the form parameter to the form formation property if it's a document element.
+		else if(form.nodeType) {
+			this.form = form;
+		}
+		
+		// If form parameter exists but is not a DOM element, notify the user formation can't continue.
+		else {
+			throw Error('Unable to create a formation object. The form parameter specified is not of type node.');
+		}
+		
+		// Retrieve all inputs for storage. Inputs are gathered as a collective whole and grouped for indexing.
+		this.inputs = null;
+		
+		// Set Custom Information Zone.
+		this.meta = {};
+		
+		// Get all inputs.
+		this.update();
+	}
+	
+	
+	
 	
 	/**
 	 * Name: Check Value.
@@ -306,6 +316,58 @@ function formation(form) {
 			// Return unchanged active index.
 			return active_idx;
 		}
+	}
+	
+	/**
+	 * Name: Update.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: Updates any data, such as the DOM, that may have changed from manipulation.
+	 */
+	formation.prototype.update = function(){
+		
+		// Get All Inputs
+		var all = this.form.getElementsByTagName('input');
+		
+		// Input Storage
+		var input_storage = {
+			all: all
+		}
+
+		// Group Inputs
+		var input = null;
+		for (var i = 0; i < all.length; i++) {
+			
+			// Get Input.
+			input = all[i];
+			
+			// loop through parent elements, starting with each input, to create a input group tree. For indexing. Stops when it reaches parent form object.
+			var element = input;
+			var path = [];
+			while (element != this.form) {
+				path.push(element);
+				element = element.parentElement;
+			}
+			
+			// Attach path to input storage.
+			var keys = Object.keys(input_storage);
+			for (var k = 0; k < keys.length; k++) {
+				
+				// skip "all" key.
+				if (k == 'all')
+					continue;
+				
+				// Create the element DOM path.
+				var element = keys[k];
+				for (var p = path.length; p > 0; p--) {
+					
+				}
+			}
+		}
+		
+		// Return All Inputs.
+		this.inputs = input_storage;
 	}
 	
 	/**
