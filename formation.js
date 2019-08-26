@@ -1,3 +1,9 @@
+"use strict"; //Converts "bad syntax" into real errors.
+
+//====================================================================
+// Formation
+//====================================================================
+
 var formation = null;
 // Protect global space while inserting function into formation object.
 (function(){
@@ -29,13 +35,13 @@ var formation = null;
 			throw Error('Unable to create a formation object. The form parameter specified is not of type node.');
 		}
 		
-		// Retrieve all inputs for storage. Inputs are gathered as a collective whole and grouped for indexing.
+		// A container for all inputs.
 		this.inputs = null;
 		
 		// Set Custom Information Zone.
 		this.meta = {};
 		
-		// Get all inputs.
+		// Retrieve all DOM information.
 		this.update();
 	}
 	
@@ -329,45 +335,9 @@ var formation = null;
 		
 		// Get All Inputs
 		var all = this.form.getElementsByTagName('input');
-		
-		// Input Storage
-		var input_storage = {
-			all: all
-		}
 
-		// Group Inputs
-		var input = null;
-		for (var i = 0; i < all.length; i++) {
-			
-			// Get Input.
-			input = all[i];
-			
-			// loop through parent elements, starting with each input, to create a input group tree. For indexing. Stops when it reaches parent form object.
-			var element = input;
-			var path = [];
-			while (element != this.form) {
-				path.push(element);
-				element = element.parentElement;
-			}
-			
-			// Attach path to input storage.
-			var keys = Object.keys(input_storage);
-			for (var k = 0; k < keys.length; k++) {
-				
-				// skip "all" key.
-				if (k == 'all')
-					continue;
-				
-				// Create the element DOM path.
-				var element = keys[k];
-				for (var p = path.length; p > 0; p--) {
-					
-				}
-			}
-		}
-		
 		// Return All Inputs.
-		this.inputs = input_storage;
+		this.inputs = all;
 	}
 	
 	/**
@@ -382,14 +352,18 @@ var formation = null;
 			Each inner array is filled with an object containing information about the validation process.
 	 */
 	formation.prototype.validate = function(elements) {
-
-		// Check if it's a single elements. If so, push into an array for checking.
-		if (!elements.length && elements.nodeType)
-			elements = [elements]
 			
 		// Check if an array of elements exist. If it doesn't, error.
-		if (!elements || !elements.length)
-			throw Error("In order to validate an array of elements needs to be passed through.");
+		if (!elements || !elements.length) {
+			if (this.inputs && this.inputs.length > 0)
+				elements = this.inputs;
+			else
+				throw Error("No inputs found.");
+		}
+		
+		// Check if it's a single elements. If so, push into an array for checking.
+		if (!elements.length || elements.nodeType)
+			elements = [elements]
 
 		// Data storage to return and local for pushing.
 		var return_data = [[],[]];
