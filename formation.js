@@ -355,6 +355,16 @@ function formation(form) {
 			}
 			
 			// Gather acceptable inputs & compare values with input.
+			else if (input.hasAttribute('data-fm-val-a-generic')) {
+				
+				// Gather acceptable inputs & compare values with input.
+				valuesArray = input.getAttribute('data-fm-val-a-generic').split(',');
+				local_data = checkValue(input, valuesArray);
+				return_data[0] = return_data[0].concat(local_data[0]);
+				return_data[1] = return_data[1].concat(local_data[1]);
+			}
+			
+			// Gather acceptable inputs & compare values with input.
 			else if (input.hasAttribute('data-fm-val-a-range')) {
 				
 				// Gather acceptable inputs & compare values with input.
@@ -369,6 +379,16 @@ function formation(form) {
 				
 				// Gather rejectable inputs & compare values with input.
 				valuesArray = input.getAttribute('data-fm-val-r').split(',');
+				local_data = checkValue(input, valuesArray);
+				return_data[0] = return_data[0].concat(local_data[1]);
+				return_data[1] = return_data[1].concat(local_data[0]);
+			}
+			
+			// Gather rejectable inputs & compare values with input.
+			else if (input.hasAttribute('data-fm-val-r-generic')) {
+				
+				// Gather rejectable inputs & compare values with input.
+				valuesArray = input.getAttribute('data-fm-val-r-generic').split(',');
 				local_data = checkValue(input, valuesArray);
 				return_data[0] = return_data[0].concat(local_data[1]);
 				return_data[1] = return_data[1].concat(local_data[0]);
