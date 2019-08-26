@@ -18,7 +18,7 @@ Currently formation is only offered as a self hosted js file. Download the file 
 </pre>
 
 ## Documentation
-The only documentation available for formation is the inline comments served inside the javascript. Every line and function is well documented for crisp and clear instructions. If you need more assistance, the demo.html provides a better understanding of the use case for each function.
+The only documentation available for formation is the inline comments served inside the javascript. Every line and function is well documented for crisp and clear instructions. If you need more assistance, the demos provide a better understanding of the use case for each set of functions.
 
 At some point, this information will be available in the repository's wiki. Just not at this time.
 
