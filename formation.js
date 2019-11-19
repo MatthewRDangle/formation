@@ -161,8 +161,26 @@ var formation = null;
 			}
 		}
 		
+		// Instructions for required method type.
+		else if (methodType == 'required') {
+			
+			// Trim the empty spaces from the input value.
+			var testEmptyString = input.value;
+			testEmptyString = testEmptyString.replace('/^\s*$/', '').replace('/\s*$/', '');
+			
+			// Match if it's still empty.
+			if (testEmptyString === '') {
+				matched_inputs.push(buildCKObj(input, arrayValues, methodType, 'required'));
+			} 
+	
+			// No match.
+			else {
+				noMatched_inputs.push(buildCKObj(input, arrayValues, methodType, null));
+			}
+		}
+		
 		else
-			throw Error('Method type did not match avialable method types.')
+			throw Error('Method type did not match available method types.')
 		
 		// Return all approved and rejected inputs.
 		return [matched_inputs, noMatched_inputs];
@@ -436,6 +454,15 @@ var formation = null;
 				// Gather rejectable inputs & compare values with input.
 				valuesArray = input.getAttribute('data-fm-val-r-range').split(',');
 				local_data = checkValue(input, valuesArray, 'range');
+				return_data[0] = return_data[0].concat(local_data[1]);
+				return_data[1] = return_data[1].concat(local_data[0]);
+			}
+			
+			// Check if input requires a value.
+			else if (input.hasAttribute('required')) {
+				
+				// Check if the value is required or not.
+				local_data = checkValue(input, 'required', 'required');
 				return_data[0] = return_data[0].concat(local_data[1]);
 				return_data[1] = return_data[1].concat(local_data[0]);
 			}
