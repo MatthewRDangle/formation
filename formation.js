@@ -227,6 +227,9 @@ var formation = null;
 	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
 	 * @param toggleClass [String] [Required] - The toggle class to add and remove from elements for viewing.
 	 * @return [Integer] - The index of the currently active element within the array.
+	 * 
+	 * @deprecated - This method will no longer be updated moving forward, but will be kept for backwards compatibility.
+	 * Check the pager object for future updates.
 	 */
 	formation.prototype.findActive = function(elements, toggleClass) {
 		
@@ -274,6 +277,9 @@ var formation = null;
 	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
 	 * @param toggleClass [String] [Required] - The toggle class to add and remove from elements for viewing.
 	 * @return [Integer] - The index of the currently active element within the array.
+	 * 
+	 * @deprecated - This method will no longer be updated moving forward, but will be kept for backwards compatibility.
+	 * Check the pager object for future updates.
 	 */
 	formation.prototype.nextActive = function(elements, toggleClass) {
 
@@ -302,6 +308,15 @@ var formation = null;
 			return active_idx;
 		}
 	},
+	
+	/**
+	 * Name: Pager.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Formation.
+	 * Description: See the pager constructor for further details. This is here just to attach it to the formation object.
+	 */
+	formation.prototype.pager = pager;
 		
 	/**
 	 * Name: Previous Active.
@@ -313,6 +328,9 @@ var formation = null;
 	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
 	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
 	 * @return [Integer] - The index of the currently active element within the array.
+	 * 
+	 * @deprecated - This method will no longer be updated moving forward, but will be kept for backwards compatibility.
+	 * Check the pager object for future updates.
 	 */
 	formation.prototype.prevActive = function(elements, toggleClass) {
 			
@@ -472,4 +490,184 @@ var formation = null;
 		return return_data;
 	}
 	
+	/**
+	 * Name: Pager.
+	 * Type: Constructor.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Create the pager object to allow looping through elements.
+	 * 
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
+	 */
+	function pager(elements, toggleClass, currentIDX) {
+		
+		// Check if an array of element elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to select next element, an array of elements needs to be passed through.");
+		else
+			this.pages = elements;
+		
+		// Check if toggle class exists.
+		if (!toggleClass)
+			throw Error('A toggle class state must exist in order to set the next element.');
+		else
+			this.toggleClass = toggleClass;
+		
+		// Set current active page.
+		if (typeof currentIDX === 'number' && currentIDX % 1 == 0)
+			this.current = currentIDX;
+		else
+			this.current = null;
+	}
+	
+	/**
+	 * Name: Go To.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Jumps the user to a specific page in the list of elements.
+	 * 
+	 * @param idx [Number] [Required] - An integer of the specific page number to be set in the pages array.
+	 */
+	pager.prototype.goTo = function(idx) {
+		
+		// Error if index is not a valid integer.
+		if (typeof idx !== 'number' && idx % 1 != 0)
+			throw Error('Your go to index must be a valid integer.');
+		
+		// If the go to page is the existing page, don't do anything.
+		if (this.current == idx)
+			return this.current;
+		
+		// See if this page exists.
+		if (this.pages.length > idx) {
+			
+			// Set new page.
+			this.pages[this.current].classList.toggle(this.toggleClass);
+			this.pages[idx].classList.toggle(this.toggleClass);
+			
+			// Return and update the current index.
+			this.current = idx;
+			return idx;
+		}
+		else
+			return this.current;
+	}
+	
+	/**
+	 * Name: Library ID.
+	 * Type: Key.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: The Javascript Library ID for validation and checking.
+	*/ 
+	pager.prototype.libID = 'formation-pager'; // This should never change.
+	
+	/**
+	 * Name: Next.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Loops through an array of elements and toggles the 'active' element.
+	 * 
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The toggle class to add and remove from elements for viewing.
+	 * @return [Integer] - The index of the currently active element within the array.
+	 * 
+	 * @deprecated - This method will no longer be updated moving forward, but will be kept for backwards compatibility.
+	 * Check the pager object for future updates.
+	 */
+	pager.prototype.next = function() {
+
+		// Set next element.
+		var next_idx = this.current + 1;
+		if (next_idx < this.pages.length) {
+			this.pages[this.current].classList.toggle(this.toggleClass);
+			this.pages[next_idx].classList.toggle(this.toggleClass);
+			
+			// Return and update the current index.
+			this.current = next_idx;
+			return next_idx;
+		}
+		else {
+			// Return unchanged active index.
+			return this.current;
+		}
+	}
+	
+	/**
+	 * Name: Previous.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Loops through an array of elements and toggles the 'active' state of the element element.
+	 * 
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
+	 * @return [Integer] - The index of the currently active element within the array.
+	 * 
+	 * @deprecated - This method will no longer be updated moving forward, but will be kept for backwards compatibility.
+	 * Check the pager object for future updates.
+	 */
+	pager.prototype.prev = function() {
+
+		// Set previous element.
+		var prev_idx = this.current - 1;
+		if (prev_idx >= 0) {
+			this.pages[this.current].classList.toggle(this.toggleClass);
+			this.pages[prev_idx].classList.toggle(this.toggleClass);
+			
+			// Return the new active index.
+			this.current = prev_idx;
+			return prev_idx;
+		}
+		else {
+			// Return unchanged active index.
+			return this.current;
+		}
+	}
+	
+	/**
+	 * Name: Set Current.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Sets the current page.
+	 * 
+	 * @param idx [Number] [Required] - The index number to update the current page.
+	 * @param jsActivate [Boolean] - True or false flag toggle the class.
+	 * @return [Integer] - The current active page index.
+	 */
+	pager.prototype.setCurrent = function(idx, jsActivate) {
+		
+		// Error if index is not a valid integer.
+		if (typeof idx !== 'number' && idx % 1 != 0)
+			throw Error('Your go to index must be a valid integer.');
+		
+		//Retrieve page.
+		var page = this.pages[idx];
+		
+		// If their is a current page, then go to page.
+		if (this.current != null)
+			this.goTo(idx);
+		
+		// If their is not a current page, then proceed.
+		else {
+			
+			// If page was found, then set the page.
+			if (page.nodeName) {
+				
+				// Toggle the class if the user chooses to.
+				if (jsActivate)
+					page.classList.toggle(this.toggleClass);	
+				
+				// Set the current idx.
+				this.current = idx;
+			}
+		}
+		
+		// Send back the updated current page.
+		return this.current;
+	}
 }());

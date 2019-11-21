@@ -86,14 +86,14 @@
 		/* Pager Controls */
 		var meta = form_control.meta;
 		meta.pages = document.getElementsByClassName('page');
-		meta.activePage = 0;
+		meta.pager = new form_control.pager(meta.pages, 'active', 0);
 		
 		// Next Button
 		meta.nextBtn = document.getElementById('nextButton');
 		meta.nextBtn.onclick = function() {
 
 			// Validate form.
-			var validate = form_control.validate(meta.pages[meta.activePage].getElementsByClassName('input'));
+			var validate = form_control.validate(meta.pages[meta.pager.current].getElementsByClassName('input'));
 			var reject = validate[1];
 
 			// If no errors, next page, otherwise display error on page.
@@ -108,13 +108,17 @@
 						error.classList.add('inactive');
 				}
 				
-				// Submit on final page.
-				var nextActive = form_control.nextActive(meta.pages, 'active');
+				// Go to next page.
+				var currentPage = meta.pager.current;
+				var nextPage = meta.pager.next();
+
+				// Change Next Page to Submit.
+				if (nextPage == meta.pager.pages.length - 1)
+					meta.nextBtn.innerHTML = 'Submit';
 				
-				if (meta.activePage == nextActive)
+				// Submit on final page.
+				if (currentPage == nextPage)
 					form.submit();
-				else
-					meta.activePage = nextActive;
 			}
 			
 			// Don't proceed with errors. Stop next page.
@@ -132,7 +136,11 @@
 		meta.prevBtn.onclick = function() {
 			
 			// Go to previous page.
-			meta.activePage = form_control.prevActive(meta.pages, 'active');
+			var prevPage = meta.pager.prev();
+			
+			// Change Next Page to Submit.
+			if (prevPage == meta.pager.pages.length - 2)
+				meta.nextBtn.innerHTML = 'Next Page';
 		};
 	</script>
 	
