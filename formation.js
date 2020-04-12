@@ -499,6 +499,7 @@ var formation = null;
 	 * 
 	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
 	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
+	 * @param currentIDX [String] [Optional] - The current active page index number.
 	 */
 	function pager(elements, toggleClass, currentIDX) {
 		
@@ -669,5 +670,37 @@ var formation = null;
 		
 		// Send back the updated current page.
 		return this.current;
+	}
+	
+	/**
+	 * Name: Update.
+	 * Type: Function.
+	 * Access: Public.
+	 * For: Pager.
+	 * Description: Updates the pages and current page index with a fresh list.
+	 * 
+	 * @param elements [Object array[object node]] [Required] - A list of elements to loop through to set the active element.
+	 * @param toggleClass [String] [Required] - The active class to add and remove from elements for viewing.
+	 * @param currentIDX [String] [Optional] - The current active page index number.
+	 */
+	pager.prototype.update = function(elements, toggleClass, currentIDX) {
+		
+		// Check if an array of element elements exist. If it doesn't, error.
+		if (!elements || !elements.length)
+			throw Error("In order to select next element, an array of elements needs to be passed through.");
+		else
+			this.pages = elements;
+		
+		// Check if toggle class exists.
+		if (!toggleClass)
+			throw Error('A toggle class state must exist in order to set the next element.');
+		else
+			this.toggleClass = toggleClass;
+		
+		// Set current active page.
+		if (typeof currentIDX === 'number' && currentIDX % 1 == 0)
+			this.current = currentIDX;
+		else
+			this.current = null;
 	}
 }());
