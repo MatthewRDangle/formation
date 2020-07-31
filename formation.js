@@ -116,9 +116,9 @@ var formation = null;
 					// Validate.
 					if (plus_idx == range_string_length - 1) {
 						num = range_string.substring(0, range_string_length - 1);
-						
+
 						// Detect Match
-						if (num < input.value) {
+						if (num < input.value && !isNaN(input.value)) {
 							matched_inputs.push(buildCKObj(input, arrayValues, methodType, range_string));
 							break;
 						}
@@ -142,7 +142,7 @@ var formation = null;
 						num = range_string.substring(1, range_string_length);
 						
 						// Detect Match
-						if (num > input.value) {
+						if (num > input.value && !isNaN(input.value)) {
 							matched_inputs.push(buildCKObj(input, arrayValues, methodType, range_string));
 							break;
 						}
