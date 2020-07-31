@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Accessibility & Readability -->
+	<meta charset="ISO-8859-1">
+	<title> Pager Demo | Formation </title>
+	<script src="../formation.js"></script>
+
+	<style>
+		.page {
+			display: block;
+		}
+		.input {
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+	<h1> Formation. </h1>
+	<hr>
+	<p> A simple form controlled by the formation object. Review the HTML for more info. </p>
+	<hr>
+	<form id="form" class="form">
+		<div class="page">
+			<div class="question">
+				<label> Simple Text Input </label>
+				<input class="input" type="text"></input>
+			</div>
+		</div>
+		 <br/>
+		<button id='submit' type='submit'> Submit </button>
+	</form>
+	
+	<script>
+		/* Create Formation Element. */
+		var form = document.getElementsByTagName('form')[0];
+		var form_control = new formation(form);
+	</script>
+	
+</body>	
+</html>
