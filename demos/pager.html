@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Accessibility & Readability -->
+	<meta charset="ISO-8859-1">
+	<title> Pager Demo | Formation </title>
+	<script src="../formation.js"></script>
+
+	<style>
+		.page {
+			display: none;
+		}
+		.error {
+			border: 1px solid rgb(200, 7, 7);
+			background-color: rgba(200, 7, 7, 0.1);
+			padding: 10px;
+			margin-top: 10px;
+		}
+		.input {
+			padding: 5px;
+		}
+		.active {
+			display: block;
+		}
+		.inactive {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<h1> Formation. </h1>
+	<hr>
+	<p> A pager enable you to jump from page to page with ease. For this demo, inputs are not validated against any criteria. Submits on final. </p>
+	<hr>
+	<form id="form" class="form">
+		<div class="page active">
+			<strong> Page 1 | 4 </strong> <br/> <br/>
+			<div class="question">
+				<label> Input 1 </label>
+				<input class="input" type="text"></input>
+			</div>
+		</div>
+		<div class="page">
+		<strong> Page 2 | 4 </strong> <br/> <br/>
+			<div class="question">
+				<label> Input 2 </label>
+				<input class="input" type="text"></input>
+			</div>		
+		</div>
+		<div class="page">
+				<strong> Page 3 | 4 </strong> <br/> <br/>
+			<div class="question">
+				<label> Input 3 </label>
+				<input class="input" type="text"></input>
+			</div>	
+		</div>
+		<div class="page">
+		<strong> Page 4 | 4 </strong> <br/> <br/>
+			<div class="question">
+				<label> Input 4 </label>
+				<input class="input" type="text"></input>
+			</div>	
+		</div>
+		<br>
+		<button id='prevButton' type='button'> Previous Page </button>
+		<button id='nextButton' type='button'> Next Page </button>
+	</form>
+	
+	<script>
+		/* Create Formation Element. */
+		var form = document.getElementsByTagName('form')[0];
+		var form_control = new formation(form);
+
+		/* Pager Controls */
+		var meta = form_control.meta;
+		meta.pages = document.getElementsByClassName('page');
+		meta.pager = new form_control.pager(meta.pages, 'active', 0);
+		
+		// Next Button
+		meta.nextBtn = document.getElementById('nextButton');
+		meta.nextBtn.onclick = function() {
+				
+			// Go to next page.
+			var currentPage = meta.pager.current;
+			var nextPage = meta.pager.next();
+
+			// Change Next Page to Submit.
+			if (nextPage == meta.pager.pages.length - 1)
+				meta.nextBtn.innerHTML = 'Submit';
+			
+			// Submit on final page.
+			if (currentPage == nextPage)
+				form.submit();
+		};
+		
+		// Prev Button
+		meta.prevBtn = document.getElementById('prevButton');
+		meta.prevBtn.onclick = function() {
+			
+			// Go to previous page.
+			var prevPage = meta.pager.prev();
+			
+			// Change Next Page to Submit.
+			if (prevPage == meta.pager.pages.length - 2)
+				meta.nextBtn.innerHTML = 'Next Page';
+		};
+	</script>
+	
+</body>	
+</html>
