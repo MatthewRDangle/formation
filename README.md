@@ -6,7 +6,9 @@
 * [Versioning](#versioning)
 
 ## What is formation?
-A ultra fast and simple javascript constructor object for building and validating HTML forms. The constructor provides important form input validation straight out of the box allows for full UI customization. Review the demos inside the "demo" folder for more detail after you download.
+An ultra fast and simple javascript constructor object for manipulating and validating HTML forms. The constructor provides important form input validation straight out of the box and allows for full UI customization. Formations can manipulate existing HTML in the document or HTML generated via Javascript. 
+
+Review the demos inside the "demo" folder for more detail after you download.
 
 Formation was build to support all modern browsers, from IE 11 onward, Chrome, Safari, Firefox and Edge. Designed for vanilla javascript. No polyfills required. :fire:
 
